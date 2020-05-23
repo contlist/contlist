@@ -1,0 +1,9 @@
+[package]
+name = "contlist"
+version = "0.1.0"
+authors = ["Aitzhanov Ivan <aitvann@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+diesel = "1.4.4"
+dotenv = "0.15.0"
