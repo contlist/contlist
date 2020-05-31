@@ -5,6 +5,7 @@ authors = ["Aitzhanov Ivan <aitvann@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-diesel = { version = "1.0.0", features = ["postgres"] }
+rocket = "0.4"
+diesel = { version = "1.0.0", features = ["postgres", "r2d2"] }
 dotenv = "0.15.0"
 serde = { version = "1.0.110", features = ["derive"] }
