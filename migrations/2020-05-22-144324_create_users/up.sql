@@ -1,6 +1,5 @@
 CREATE TABLE Users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(32) NOT NULL,
+    username VARCHAR(32) PRIMARY KEY,
     pwd_hash CHAR(128) NOT NULL,
     pwd_salt CHAR(128) NOT NULL
 );
