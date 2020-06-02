@@ -1,21 +1,22 @@
 table! {
     contacts (id) {
         id -> Int8,
-        user_id -> Int8,
+        username -> Varchar,
         contact_name -> Varchar,
         phone -> Varchar,
     }
 }
 
 table! {
-    users (id) {
-        id -> Int8,
+    users (username) {
         username -> Varchar,
-        pwd_hash -> Bpchar,
-        pwd_salt -> Bpchar,
+        password_hash -> Varchar,
     }
 }
 
-joinable!(contacts -> users (user_id));
+joinable!(contacts -> users (username));
 
-allow_tables_to_appear_in_same_query!(contacts, users,);
+allow_tables_to_appear_in_same_query!(
+    contacts,
+    users,
+);
