@@ -16,8 +16,8 @@
 # Ignore all local history of files
 .history
 
-### Rustenger sever ###
+### Contlist ###
 # Ignore all log fiels
+Cargo.lock
 .log
-
 .env
