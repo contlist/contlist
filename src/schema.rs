@@ -16,7 +16,4 @@ table! {
 
 joinable!(contacts -> users (username));
 
-allow_tables_to_appear_in_same_query!(
-    contacts,
-    users,
-);
+allow_tables_to_appear_in_same_query!(contacts, users,);

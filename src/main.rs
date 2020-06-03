@@ -1,4 +1,4 @@
-#![feature(proc_macro_hygiene, decl_macro)]
+#![feature(proc_macro_hygiene, decl_macro, or_patterns, box_syntax)]
 
 #[macro_use]
 extern crate rocket;
@@ -8,8 +8,8 @@ extern crate diesel;
 use diesel::prelude::*;
 
 mod db;
+mod domain;
 mod schema;
-// mod domain;
 mod web;
 
 fn main() {
