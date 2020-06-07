@@ -3,7 +3,7 @@ use crate::db::models::user::{InsertUser, QueryUser, UpdateUser};
 use crate::db::pool::PgConnManager;
 use crate::domain::user::{LoginUser, RegisterUser, User, UserRepo};
 use crate::schema::users;
-use argonautica::Hasher;
+use argonautica::{Hasher, Verifier};
 use diesel::{prelude::*, r2d2::PooledConnection};
 use std::env;
 
@@ -14,6 +14,19 @@ pub struct UserPgRepo<'a> {
 impl<'a> UserPgRepo<'a> {
     pub fn new(connection: &'a PooledConnection<PgConnManager>) -> Self {
         Self { connection }
+    }
+    
+    fn find_query_user_by_username(&self, username: &str) -> Result<Option<QueryUser>, Error> {
+        use diesel::result::Error as DieselError;
+
+        users::table
+            .find(username)
+            .first::<QueryUser>(self.connection)
+            .map(Some)
+            .or_else(|e| match e {
+                DieselError::NotFound => Ok(None),
+                e => Err(Error::from(e)),
+            })
     }
 }
 
@@ -26,52 +39,47 @@ impl<'a> UserRepo for UserPgRepo<'a> {
             password_hash: password_hash.as_str(),
         };
 
-        let n = diesel::insert_into(users::table)
+        diesel::insert_into(users::table)
             .values(&insert_user)
-            .execute(self.connection)?;
-
-        Ok(n)
+            .execute(self.connection)
+            .map_err(Error::from)
     }
 
     fn find_user_by_username(&self, username: &str) -> Result<Option<User>, Error> {
-        let result = users::table
-            .find(username)
-            .first::<QueryUser>(self.connection);
+        let user = self
+            .find_query_user_by_username(username)?
+            .map(|query_user| {
+                User {
+                    username: query_user.username,
+                }
+            });
 
-        use diesel::result::Error as DieselError;
-        let query_user = match result {
-            Err(DieselError::NotFound) => return Ok(None),
-            Err(e) => Err(Error::from(e)),
-            Ok(user) => Ok(user),
-        }?;
-
-        let user = User {
-            username: query_user.username,
-        };
-
-        Ok(Some(user))
+        Ok(user)
     }
 
     fn find_user_by_credentials(&self, credentials: &LoginUser) -> Result<Option<User>, Error> {
-        let password_hash = hash_password(credentials.password)?;
+        let secret_key = env::var("SECRET_KEY").expect("failed to read environment variable");
 
-        let result = users::table
-            .filter(users::username.eq(credentials.username))
-            .filter(users::password_hash.eq(password_hash))
-            .first::<QueryUser>(self.connection);
-
-        use diesel::result::Error as DieselError;
-        let query_user = match result {
-            Err(DieselError::NotFound) => return Ok(None),
-            Err(e) => Err(Error::from(e)),
-            Ok(user) => Ok(user),
-        }?;
-
-        let user = User {
-            username: query_user.username,
+        let quser = if let Some(quser) = self.find_query_user_by_username(credentials.username)? {
+            quser
+        } else {
+            return Ok(None);
         };
 
-        Ok(Some(user))
+        let verified = Verifier::new()
+            .with_hash(quser.password_hash)
+            .with_secret_key(secret_key)
+            .verify()?;
+
+        if verified {
+            let user = User {
+                username: quser.username,
+            };
+
+            Ok(Some(user))
+        } else {
+            Ok(None)
+        }
     }
 
     fn update_user(&self, username: &str, user: &crate::domain::user::UpdateUser) -> Result<usize, Error> {
@@ -81,11 +89,10 @@ impl<'a> UserRepo for UserPgRepo<'a> {
             password_hash: password_hash.as_str(),
         };
 
-        let n = diesel::update(users::table.find(username))
+        diesel::update(users::table.find(username))
             .set(&update_user)
-            .execute(self.connection)?;
-
-        Ok(n)
+            .execute(self.connection)
+            .map_err(Error::from)
     }
 }
 
@@ -96,7 +103,5 @@ fn hash_password(password: &str) -> Result<String, Error> {
         .with_password(password)
         .with_secret_key(secret_key)
         .hash()
-        .map_err(anyhow::Error::msg)
-        .map_err(anyhow::Error::into)
-        .map_err(Error::DataPrepareError)
+        .map_err(Error::from)
 }

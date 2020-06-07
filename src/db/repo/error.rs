@@ -1,4 +1,5 @@
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use argonautica::Error as ArgError;
 use std::error::Error as StdError;
 use thiserror::Error;
 
@@ -26,5 +27,12 @@ impl From<DieselError> for Error {
             }
             e => Error::DataPrepareError(anyhow::Error::msg(e).into()),
         }
+    }
+}
+
+impl From<ArgError> for Error {
+    fn from(error: ArgError) -> Self {
+        let error = anyhow::Error::msg(error);
+        Error::DataPrepareError(error.into())
     }
 }

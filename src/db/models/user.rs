@@ -5,7 +5,7 @@ use crate::schema::users;
 #[primary_key(username)]
 pub struct QueryUser {
     pub username: String,
-    pub password_hash: String, // FIXME: change to const length string
+    pub password_hash: String,
 }
 
 #[derive(Insertable, Clone, Debug)]
