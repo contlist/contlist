@@ -1,6 +1,6 @@
 use super::error::{Error, Result};
 use chrono::{Duration, Utc};
-use jsonwebtoken::{self as jwt, Algorithm, errors::ErrorKind as JwtErrorKind};
+use jsonwebtoken::{self as jwt, Algorithm};
 use serde::{Deserialize, Serialize};
 use std::env;
 
@@ -23,9 +23,7 @@ impl Claims {
 
         let header = Header::new(Algorithm::HS256);
         let key = EncodingKey::from_secret(secret_key.as_bytes());
-        jwt::encode(&header, &self, &key)
-            .map_err(|e| Box::new(e).into())
-            .map_err(Error::CreateTokenError)
+        jwt::encode(&header, &self, &key).map_err(Error::from)
     }
 
     /// Decode token into `CurrentUser` struct
@@ -36,10 +34,7 @@ impl Claims {
         let key = DecodingKey::from_secret(secret_key.as_bytes());
         let validation = Validation::new(Algorithm::HS256);
         jwt::decode(token, &key, &validation)
-            .map_err(|e| match e.kind() {
-                JwtErrorKind::ExpiredSignature => Error::ExpiredTokenError,
-                _ => Error::InvalidTokenError(Box::new(e).into()),
-            })
+            .map_err(Error::from)
             .map(|token_data| token_data.claims)
     }
 }
