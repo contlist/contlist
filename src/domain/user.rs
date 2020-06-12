@@ -1,7 +1,21 @@
+use super::auth::{token::Claims, error::Result as AuthResult};
 use crate::db::repo::error::Error as DbError;
+use chrono::Duration;
+use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug)]
 pub struct User {
+    pub username: String,
+}
+
+#[derive(Clone, Debug)]
+pub struct AuthUser<'a> {
+    pub username: &'a str,
+    pub token: String,
+}
+
+#[derive(Deserialize, Clone, Debug)]
+pub struct CurrentUser {
     pub username: String,
 }
 
@@ -20,6 +34,25 @@ pub struct LoginUser<'a> {
 #[derive(Clone, Debug)]
 pub struct UpdateUser<'a> {
     pub password: &'a str,
+}
+
+impl User {
+    pub fn as_token(&self) -> AuthResult<String> {
+        let duration = Duration::minutes(15); // TODO: move to config
+        let claims = Claims::new(self.username.clone(), duration);
+        claims.as_token()
+    }
+}
+
+impl CurrentUser {
+    pub fn from_token(token: &str) -> AuthResult<Self> {
+        let claims = Claims::from_token(token)?;
+        let current_user = Self {
+            username: claims.username,
+        };
+
+        Ok(current_user)
+    }
 }
 
 pub trait UserRepo {

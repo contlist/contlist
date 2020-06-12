@@ -1,5 +1,5 @@
-use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use argonautica::Error as ArgError;
+use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use std::error::Error as StdError;
 use thiserror::Error;
 
@@ -10,6 +10,7 @@ pub enum Error {
     #[error("failed to prepare data: {0}")]
     DataPrepareError(Box<dyn StdError + Send + Sync>),
     #[error("error occurred in internal storage: {0}")]
+    // TODO: delete #[from]
     InternalStorageError(#[from] Box<dyn StdError + Send + Sync>),
 }
 
@@ -25,6 +26,7 @@ impl From<DieselError> for Error {
                 let error = anyhow::Error::msg(msg);
                 Error::InternalStorageError(error.into())
             }
+            // TODO: check if it's the correct way to store error
             e => Error::DataPrepareError(anyhow::Error::msg(e).into()),
         }
     }
