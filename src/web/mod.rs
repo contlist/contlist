@@ -1,5 +1,5 @@
+pub mod auth;
 pub mod contacts;
-pub mod error;
 pub mod users;
 
 use crate::db::pool;
