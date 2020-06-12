@@ -1,4 +1,4 @@
-use super::auth::{token::Claims, error::Result as AuthResult};
+use super::auth::{error::Result as AuthResult, token::Claims};
 use crate::db::repo::error::Error as DbError;
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
