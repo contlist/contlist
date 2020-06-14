@@ -31,7 +31,7 @@ impl<'a> UserPgRepo<'a> {
 }
 
 impl<'a> UserRepo for UserPgRepo<'a> {
-    fn register_user(&self, user: &RegisterUser) -> Result<usize, Error> {
+    fn save_new_user(&self, user: &RegisterUser) -> Result<usize, Error> {
         let password_hash = hash_password(user.password)?;
 
         let insert_user = InsertUser {

@@ -1,4 +1,4 @@
-use super::{auth::Claims, Result};
+use super::{auth::Claims, Error, Result};
 use crate::db::Result as RepoResult;
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
@@ -9,8 +9,8 @@ pub struct User {
 }
 
 #[derive(Clone, Debug)]
-pub struct AuthUser<'a> {
-    pub username: &'a str,
+pub struct AuthUser {
+    pub username: String,
     pub token: String,
 }
 
@@ -55,8 +55,43 @@ impl CurrentUser {
     }
 }
 
+pub fn register_user(register_user: &RegisterUser<'_>, repo: &impl UserRepo) -> Result<()> {
+    repo.save_new_user(register_user)
+        .map_err(Error::from)
+        .map(|_| ())
+}
+
+pub fn get_user(username: &str, repo: &impl UserRepo) -> Result<User> {
+    repo.find_user_by_username(username)?.ok_or(Error::NotFound)
+}
+
+pub fn login_user(login_user: &LoginUser<'_>, repo: &impl UserRepo) -> Result<AuthUser> {
+    let user = repo
+        .find_user_by_credentials(login_user)?
+        .ok_or(Error::InvalidCredentials(
+            anyhow::Error::msg("invalid login or password").into(),
+        ))?;
+
+    let auth_user = AuthUser {
+        token: user.as_token()?,
+        username: user.username,
+    };
+
+    Ok(auth_user)
+}
+
+pub fn update_user(
+    username: &str,
+    update_user: &UpdateUser<'_>,
+    repo: &impl UserRepo,
+) -> Result<()> {
+    repo.update_user(username, update_user)
+        .map_err(Error::from)
+        .map(|_| ())
+}
+
 pub trait UserRepo {
-    fn register_user(&self, user: &RegisterUser) -> RepoResult<usize>;
+    fn save_new_user(&self, user: &RegisterUser) -> RepoResult<usize>;
     fn find_user_by_username(&self, username: &str) -> RepoResult<Option<User>>;
     fn find_user_by_credentials(&self, credentials: &LoginUser) -> RepoResult<Option<User>>;
     fn update_user(&self, username: &str, user: &UpdateUser) -> RepoResult<usize>;
