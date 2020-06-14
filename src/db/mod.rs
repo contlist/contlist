@@ -1,3 +1,7 @@
-pub mod models;
-pub mod pool;
-pub mod repo;
+pub(super) mod models;
+
+mod pool;
+pub use pool::*;
+
+mod repo;
+pub use repo::*;

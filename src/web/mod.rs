@@ -1,12 +1,11 @@
-pub mod auth;
 pub mod contacts;
 pub mod users;
 
-use crate::db::pool;
+use crate::db;
 use rocket::Rocket;
 
 pub fn rocket() -> Rocket {
-    let db = pool::init_db();
+    let db = db::init_db();
 
     Rocket::ignite().manage(db)
 }

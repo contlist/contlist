@@ -3,6 +3,8 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use std::error::Error as StdError;
 use thiserror::Error;
 
+pub type Result<T> = std::result::Result<T, Error>;
+
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("unespected duplicate")]
@@ -10,13 +12,12 @@ pub enum Error {
     #[error("failed to prepare data: {0}")]
     DataPrepareError(Box<dyn StdError + Send + Sync>),
     #[error("error occurred in internal storage: {0}")]
-    // TODO: delete #[from]
-    InternalStorageError(#[from] Box<dyn StdError + Send + Sync>),
+    InternalStorageError(Box<dyn StdError + Send + Sync>),
 }
 
 impl From<DieselError> for Error {
-    fn from(error: DieselError) -> Self {
-        match error {
+    fn from(src: DieselError) -> Self {
+        match src {
             DieselError::DatabaseError(
                 DatabaseErrorKind::UniqueViolation | DatabaseErrorKind::ForeignKeyViolation,
                 ..,
@@ -26,15 +27,14 @@ impl From<DieselError> for Error {
                 let error = anyhow::Error::msg(msg);
                 Error::InternalStorageError(error.into())
             }
-            // TODO: check if it's the correct way to store error
-            e => Error::DataPrepareError(anyhow::Error::msg(e).into()),
+            e => Error::DataPrepareError(Box::new(e).into()),
         }
     }
 }
 
 impl From<ArgError> for Error {
-    fn from(error: ArgError) -> Self {
-        let error = anyhow::Error::msg(error);
+    fn from(src: ArgError) -> Self {
+        let error = anyhow::Error::msg(src);
         Error::DataPrepareError(error.into())
     }
 }

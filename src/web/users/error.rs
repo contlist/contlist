@@ -1,4 +1,4 @@
-use crate::domain::auth::error::Error as DomainError;
+use crate::domain::user::Error as DomainError;
 use rocket::response::{Responder, Response, Result as ResponseResult};
 use rocket::{http::Status, Request};
 use std::error::Error as StdError;

@@ -1,5 +1,5 @@
-mod contact;
-pub use contact::*;
+mod auth;
+pub(super) use auth::*;
 
 mod user;
 pub use user::*;

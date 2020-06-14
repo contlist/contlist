@@ -6,9 +6,12 @@ edition = "2018"
 
 [dependencies]
 rocket = "0.4"
-diesel = { version = "1.0.0", features = ["postgres", "r2d2"] }
-serde = { version = "1.0.110", features = ["derive"] }
+diesel = { version = "1.0", features = ["postgres", "r2d2"] }
+serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
 anyhow = "1.0"
-dotenv = "0.15.0"
+dotenv = "0.15"
 argonautica = "0.2"
+jsonwebtoken = "7.1"
+chrono = "0.4"
+boolinator = "2.4"

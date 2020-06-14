@@ -1,5 +1,5 @@
-use super::auth::{error::Result as AuthResult, token::Claims};
-use crate::db::repo::error::Error as DbError;
+use super::{auth::Claims, Result};
+use crate::db::Result as RepoResult;
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
 
@@ -37,7 +37,7 @@ pub struct UpdateUser<'a> {
 }
 
 impl User {
-    pub fn as_token(&self) -> AuthResult<String> {
+    pub fn as_token(&self) -> Result<String> {
         let duration = Duration::minutes(15); // TODO: move to config
         let claims = Claims::new(self.username.clone(), duration);
         claims.as_token()
@@ -45,7 +45,7 @@ impl User {
 }
 
 impl CurrentUser {
-    pub fn from_token(token: &str) -> AuthResult<Self> {
+    pub fn from_token(token: &str) -> Result<Self> {
         let claims = Claims::from_token(token)?;
         let current_user = Self {
             username: claims.username,
@@ -56,8 +56,8 @@ impl CurrentUser {
 }
 
 pub trait UserRepo {
-    fn register_user(&self, user: &RegisterUser) -> Result<usize, DbError>;
-    fn find_user_by_username(&self, username: &str) -> Result<Option<User>, DbError>;
-    fn find_user_by_credentials(&self, credentials: &LoginUser) -> Result<Option<User>, DbError>;
-    fn update_user(&self, username: &str, user: &UpdateUser) -> Result<usize, DbError>;
+    fn register_user(&self, user: &RegisterUser) -> RepoResult<usize>;
+    fn find_user_by_username(&self, username: &str) -> RepoResult<Option<User>>;
+    fn find_user_by_credentials(&self, credentials: &LoginUser) -> RepoResult<Option<User>>;
+    fn update_user(&self, username: &str, user: &UpdateUser) -> RepoResult<usize>;
 }
