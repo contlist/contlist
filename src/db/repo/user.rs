@@ -1,9 +1,10 @@
-use super::error::Error;
+use super::{Error, Result};
 use crate::db::models::user::{InsertUser, QueryUser, UpdateUser};
 use crate::db::pool::PgConnManager;
 use crate::domain::user::{LoginUser, RegisterUser, User, UserRepo};
 use crate::schema::users;
 use argonautica::{Hasher, Verifier};
+use boolinator::Boolinator;
 use diesel::{prelude::*, r2d2::PooledConnection};
 use std::env;
 
@@ -16,7 +17,7 @@ impl<'a> UserPgRepo<'a> {
         Self { connection }
     }
 
-    fn find_query_user_by_username(&self, username: &str) -> Result<Option<QueryUser>, Error> {
+    fn find_query_user_by_username(&self, username: &str) -> Result<Option<QueryUser>> {
         use diesel::result::Error as DieselError;
 
         users::table
@@ -31,7 +32,7 @@ impl<'a> UserPgRepo<'a> {
 }
 
 impl<'a> UserRepo for UserPgRepo<'a> {
-    fn save_new_user(&self, user: &RegisterUser) -> Result<usize, Error> {
+    fn save_new_user(&self, user: &RegisterUser) -> Result<usize> {
         let password_hash = hash_password(user.password)?;
 
         let insert_user = InsertUser {
@@ -45,7 +46,7 @@ impl<'a> UserRepo for UserPgRepo<'a> {
             .map_err(Error::from)
     }
 
-    fn find_user_by_username(&self, username: &str) -> Result<Option<User>, Error> {
+    fn find_user_by_username(&self, username: &str) -> Result<Option<User>> {
         let user = self
             .find_query_user_by_username(username)?
             .map(|query_user| User {
@@ -55,8 +56,8 @@ impl<'a> UserRepo for UserPgRepo<'a> {
         Ok(user)
     }
 
-    fn find_user_by_credentials(&self, credentials: &LoginUser) -> Result<Option<User>, Error> {
-        let secret_key = env::var("ARGON_SECRET_KEY").expect("failed to read environment variable");
+    fn find_user_by_credentials(&self, credentials: &LoginUser) -> Result<Option<User>> {
+        let secret_key = env::var("ARGON_SECRET_KEY").expect("failed to read environment variable"); // TODO: move to config
 
         let quser = if let Some(quser) = self.find_query_user_by_username(credentials.username)? {
             quser
@@ -64,27 +65,18 @@ impl<'a> UserRepo for UserPgRepo<'a> {
             return Ok(None);
         };
 
-        let verified = Verifier::new()
+        let user = Verifier::new()
             .with_hash(quser.password_hash)
             .with_secret_key(secret_key)
-            .verify()?;
-
-        if verified {
-            let user = User {
+            .verify()?
+            .as_some(User {
                 username: quser.username,
-            };
+            });
 
-            Ok(Some(user))
-        } else {
-            Ok(None)
-        }
+        Ok(user)
     }
 
-    fn update_user(
-        &self,
-        username: &str,
-        user: &crate::domain::user::UpdateUser,
-    ) -> Result<usize, Error> {
+    fn update_user(&self, username: &str, user: &crate::domain::user::UpdateUser) -> Result<usize> {
         let password_hash = hash_password(user.password)?;
 
         let update_user = UpdateUser {
@@ -98,8 +90,8 @@ impl<'a> UserRepo for UserPgRepo<'a> {
     }
 }
 
-fn hash_password(password: &str) -> Result<String, Error> {
-    let secret_key = env::var("ARGON_SECRET_KEY").expect("failed to read environment variable");
+fn hash_password(password: &str) -> Result<String> {
+    let secret_key = env::var("ARGON_SECRET_KEY").expect("failed to read environment variable"); // TODO: move to config
 
     Hasher::default()
         .with_password(password)
