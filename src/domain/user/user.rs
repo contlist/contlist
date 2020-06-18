@@ -3,12 +3,12 @@ use crate::db::Result as RepoResult;
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Clone, Debug)]
 pub struct User {
     pub username: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Serialize, Clone, Debug)]
 pub struct AuthUser {
     pub username: String,
     pub token: String,
@@ -19,19 +19,19 @@ pub struct CurrentUser {
     pub username: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug)]
 pub struct RegisterUser<'a> {
     pub username: &'a str,
     pub password: &'a str,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct LoginUser<'a> {
     pub username: &'a str,
     pub password: &'a str,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct UpdateUser<'a> {
     pub password: &'a str,
 }

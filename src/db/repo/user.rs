@@ -66,6 +66,7 @@ impl UserRepo for UserPgRepo {
         };
 
         let user = Verifier::new()
+            .with_password(credentials.password)
             .with_hash(quser.password_hash)
             .with_secret_key(secret_key)
             .verify()?
