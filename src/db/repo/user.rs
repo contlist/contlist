@@ -1,19 +1,19 @@
 use super::{Error, Result};
 use crate::db::models::user::{InsertUser, QueryUser, UpdateUser};
-use crate::db::pool::PgConnManager;
+use crate::db::pool::PooledConnection;
 use crate::domain::user::{LoginUser, RegisterUser, User, UserRepo};
 use crate::schema::users;
 use argonautica::{Hasher, Verifier};
 use boolinator::Boolinator;
-use diesel::{prelude::*, r2d2::PooledConnection};
+use diesel::prelude::*;
 use std::env;
 
-pub struct UserPgRepo<'a> {
-    connection: &'a PooledConnection<PgConnManager>,
+pub struct UserPgRepo {
+    connection: PooledConnection,
 }
 
-impl<'a> UserPgRepo<'a> {
-    pub fn new(connection: &'a PooledConnection<PgConnManager>) -> Self {
+impl UserPgRepo {
+    pub fn new(connection: PooledConnection) -> Self {
         Self { connection }
     }
 
@@ -22,7 +22,7 @@ impl<'a> UserPgRepo<'a> {
 
         users::table
             .find(username)
-            .first::<QueryUser>(self.connection)
+            .first::<QueryUser>(&self.connection)
             .map(Some)
             .or_else(|e| match e {
                 DieselError::NotFound => Ok(None),
@@ -31,7 +31,7 @@ impl<'a> UserPgRepo<'a> {
     }
 }
 
-impl<'a> UserRepo for UserPgRepo<'a> {
+impl UserRepo for UserPgRepo {
     fn save_new_user(&self, user: &RegisterUser) -> Result<usize> {
         let password_hash = hash_password(user.password)?;
 
@@ -42,7 +42,7 @@ impl<'a> UserRepo for UserPgRepo<'a> {
 
         diesel::insert_into(users::table)
             .values(&insert_user)
-            .execute(self.connection)
+            .execute(&self.connection)
             .map_err(Error::from)
     }
 
@@ -85,7 +85,7 @@ impl<'a> UserRepo for UserPgRepo<'a> {
 
         diesel::update(users::table.find(username))
             .set(&update_user)
-            .execute(self.connection)
+            .execute(&self.connection)
             .map_err(Error::from)
     }
 }
