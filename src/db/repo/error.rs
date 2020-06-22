@@ -1,4 +1,5 @@
-use argonautica::Error as ArgError;
+use argon2::Error as ArgError;
+use base64::DecodeError as Base64Error;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use std::error::Error as StdError;
 use thiserror::Error;
@@ -35,6 +36,13 @@ impl From<DieselError> for Error {
 impl From<ArgError> for Error {
     fn from(src: ArgError) -> Self {
         let error = anyhow::Error::msg(src);
+        Error::DataPrepareError(error.into())
+    }
+}
+
+impl From<Base64Error> for Error {
+    fn from(src: Base64Error) -> Self {
+        let error = anyhow::Error::new(src);
         Error::DataPrepareError(error.into())
     }
 }
