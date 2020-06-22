@@ -35,14 +35,15 @@ impl From<DomainError> for Error {
 }
 
 impl<'r> Responder<'r> for Error {
-    fn respond_to(self, request: &Request) -> ResponseResult<'r> {
+    fn respond_to(self, _request: &Request) -> ResponseResult<'r> {
         let mut builder = Response::build();
         let response = match self {
+            Error::NotFound => builder.status(Status::NotFound),
             Error::MissingTokenError | Error::ExpiredTokenError => builder
                 .status(Status::Unauthorized)
                 .raw_header("WWW-Authenticate", "Bearer"),
             Error::InvalidTokenError(_) => builder.status(Status::Forbidden),
-            Error::RepoError(_) | Error::NotFound => builder.status(Status::InternalServerError),
+            Error::RepoError(_) => builder.status(Status::InternalServerError),
             Error::UserError(_) => builder.status(Status::BadRequest),
         }
         .finalize();

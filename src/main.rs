@@ -5,7 +5,6 @@ extern crate rocket;
 
 #[macro_use]
 extern crate diesel;
-use diesel::prelude::*;
 
 mod db;
 mod domain;

@@ -27,11 +27,11 @@ fn get(username: String, repo: UserPgRepo) -> Result<Json<User>> {
 
 #[post("/update", format = "json", data = "<update_user>")]
 fn update(
-    current_user: CurrentUser,
+    current_user: Result<CurrentUser>,
     update_user: Json<UpdateUser>,
     repo: UserPgRepo,
 ) -> Result<()> {
-    user::update_user(current_user.username.as_str(), &update_user, &repo)
+    user::update_user(current_user?.username.as_str(), &update_user, &repo)
         .map_err(Error::from)
         .map(|_| ())
 }
