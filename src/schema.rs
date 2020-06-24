@@ -4,6 +4,8 @@ table! {
         username -> Varchar,
         contact_name -> Varchar,
         phone -> Varchar,
+        create_timestamp -> Timestamptz,
+        change_timestamp -> Nullable<Timestamptz>,
     }
 }
 
@@ -12,6 +14,8 @@ table! {
         username -> Varchar,
         password_hash -> Varchar,
         password_salt -> Varchar,
+        create_timestamp -> Timestamptz,
+        change_timestamp -> Nullable<Timestamptz>,
     }
 }
 

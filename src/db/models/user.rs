@@ -1,4 +1,5 @@
 use crate::schema::users;
+use chrono::{DateTime, Utc};
 
 #[derive(Queryable, Identifiable, Clone, Debug)]
 #[table_name = "users"]
@@ -7,6 +8,8 @@ pub struct QueryUser {
     pub username: String,
     pub password_hash: String,
     pub password_salt: String,
+    pub create_timestamp: DateTime<Utc>,
+    pub change_timestamp: Option<DateTime<Utc>>,
 }
 
 #[derive(Insertable, Clone, Debug)]
