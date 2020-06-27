@@ -3,7 +3,7 @@ table! {
         id -> Int8,
         username -> Varchar,
         contact_name -> Varchar,
-        phone -> Varchar,
+        phone_number -> Varchar,
         create_timestamp -> Timestamptz,
         change_timestamp -> Nullable<Timestamptz>,
     }

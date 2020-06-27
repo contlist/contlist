@@ -91,8 +91,8 @@ pub fn update_user(
 }
 
 pub trait UserRepo {
-    fn save_new_user(&self, user: &RegisterUser) -> RepoResult<usize>;
+    fn save_new_user(&self, user: &RegisterUser<'_>) -> RepoResult<usize>;
     fn find_user_by_username(&self, username: &str) -> RepoResult<Option<User>>;
-    fn find_user_by_credentials(&self, credentials: &LoginUser) -> RepoResult<Option<User>>;
-    fn update_user(&self, username: &str, user: &UpdateUser) -> RepoResult<usize>;
+    fn find_user_by_credentials(&self, credentials: &LoginUser<'_>) -> RepoResult<Option<User>>;
+    fn update_user(&self, username: &str, user: &UpdateUser<'_>) -> RepoResult<usize>;
 }

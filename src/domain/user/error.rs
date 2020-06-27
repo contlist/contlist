@@ -10,7 +10,7 @@ pub enum Error {
     #[error("failed to find user")]
     NotFound,
     #[error("user with same login already exists")]
-    AlreadyExitsError,
+    AlreadyExistsError,
     #[error("invalid user credentials: {0}")]
     InvalidCredentials(Box<dyn StdError + Send + Sync>),
     #[error("the token has expired")]
@@ -24,7 +24,7 @@ pub enum Error {
 impl From<RepoError> for Error {
     fn from(src: RepoError) -> Self {
         match src {
-            RepoError::UnexpectedDuplicateError => Error::AlreadyExitsError,
+            RepoError::UnexpectedDuplicateError => Error::AlreadyExistsError,
             e => Error::RepoError(Box::new(e).into()),
         }
     }
