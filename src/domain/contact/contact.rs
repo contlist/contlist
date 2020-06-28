@@ -32,5 +32,12 @@ pub trait ContactRepo {
         number: PhoneNumber<&'_ str>,
     ) -> Result<Vec<Contact>>;
     fn update_contact(&self, id: i64, contact: UpdateContact<'_>) -> Result<usize>;
+    fn update_contact_with_username(
+        &self,
+        username: &str,
+        id: i64,
+        contact: UpdateContact<'_>,
+    ) -> Result<usize>;
     fn delete_contact(&self, id: i64) -> Result<usize>;
+    fn delete_contact_with_username(&self, username: &str, id: i64) -> Result<usize>;
 }

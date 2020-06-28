@@ -94,10 +94,7 @@ impl ContactRepo for ContactPgRepo {
         id: i64,
         contact: crate::domain::contact::UpdateContact<'_>,
     ) -> Result<usize> {
-        let update_contact = UpdateContact {
-            contact_name: contact.contact_name,
-            phone_number: contact.phone_number,
-        };
+        let update_contact = UpdateContact::from(contact);
 
         diesel::update(contacts::table.find(id))
             .set(&update_contact)
@@ -105,10 +102,38 @@ impl ContactRepo for ContactPgRepo {
             .map_err(Error::from)
     }
 
+    fn update_contact_with_username(
+        &self,
+        username: &str,
+        id: i64,
+        contact: crate::domain::contact::UpdateContact<'_>,
+    ) -> Result<usize> {
+        let update_contact = UpdateContact::from(contact);
+
+        diesel::update(
+            contacts::table
+                .filter(contacts::username.eq(username))
+                .filter(contacts::id.eq(id)),
+        )
+        .set(&update_contact)
+        .execute(&self.connection)
+        .map_err(Error::from)
+    }
+
     fn delete_contact(&self, id: i64) -> Result<usize> {
         diesel::delete(contacts::table.find(id))
             .execute(&self.connection)
             .map_err(Error::from)
+    }
+
+    fn delete_contact_with_username(&self, username: &str, id: i64) -> Result<usize> {
+        diesel::delete(
+            contacts::table
+                .filter(contacts::username.eq(username))
+                .filter(contacts::id.eq(id)),
+        )
+        .execute(&self.connection)
+        .map_err(Error::from)
     }
 }
 
@@ -123,6 +148,15 @@ impl From<QueryContact> for Contact {
     fn from(value: QueryContact) -> Self {
         Self {
             id: value.id,
+            contact_name: value.contact_name,
+            phone_number: value.phone_number,
+        }
+    }
+}
+
+impl<'a> From<crate::domain::contact::UpdateContact<'a>> for UpdateContact<'a> {
+    fn from(value: crate::domain::contact::UpdateContact<'a>) -> Self {
+        Self {
             contact_name: value.contact_name,
             phone_number: value.phone_number,
         }
