@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Clone, Debug)]
 pub struct Contact {
-    pub id: u64,
+    pub id: i64,
     pub contact_name: String,
     pub phone_number: PhoneNumber<String>,
 }
@@ -22,10 +22,10 @@ pub struct UpdateContact<'a> {
 }
 
 pub trait ContactRepo {
-    fn save_new_contct(&self, contact: &CreateContact<'_>) -> Result<usize>;
-    fn find_contact(&self, id: u64) -> Result<Option<Contact>>;
+    fn save_new_contact(&self, username: &str, contact: CreateContact<'_>) -> Result<usize>;
+    fn find_contact(&self, id: i64) -> Result<Option<Contact>>;
     fn find_contacts_by_name(&self, name: &str) -> Result<Vec<Contact>>;
-    fn find_contacts_by_number(&self, number: &PhoneNumber<&'_ str>) -> Result<Vec<Contact>>;
-    fn update_contact(&self, username: &str, contact: &UpdateContact<'_>) -> Result<usize>;
-    fn delete_contact(&self, id: u64) -> Result<usize>;
+    fn find_contacts_by_number(&self, number: PhoneNumber<&'_ str>) -> Result<Vec<Contact>>;
+    fn update_contact(&self, id: i64, contact: UpdateContact<'_>) -> Result<usize>;
+    fn delete_contact(&self, id: i64) -> Result<usize>;
 }
