@@ -31,9 +31,13 @@ fn update(
     update_user: Json<UpdateUser>,
     repo: UserPgRepo,
 ) -> Result<()> {
-    user::update_user(current_user?.username.as_str(), update_user.into_inner(), &repo)
-        .map_err(Error::from)
-        .map(|_| ())
+    user::update_user(
+        current_user?.username.as_str(),
+        update_user.into_inner(),
+        &repo,
+    )
+    .map_err(Error::from)
+    .map(|_| ())
 }
 
 pub fn api() -> Vec<Route> {

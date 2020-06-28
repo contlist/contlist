@@ -44,6 +44,19 @@ impl ContactRepo for ContactPgRepo {
         Ok(contact)
     }
 
+    fn find_contact_by_username(&self, username: &str) -> Result<Vec<Contact>> {
+        let contacts = contacts::table
+            .filter(contacts::username.eq(username))
+            .load::<QueryContact>(&self.connection)
+            .map_err(Error::from)?
+            .iter()
+            .cloned()
+            .map(Contact::from)
+            .collect();
+
+        Ok(contacts)
+    }
+
     fn find_contacts_by_name(&self, username: &str, name: &str) -> Result<Vec<Contact>> {
         let contacts = contacts::table
             .filter(contacts::username.eq(username))
@@ -58,7 +71,11 @@ impl ContactRepo for ContactPgRepo {
         Ok(contacts)
     }
 
-    fn find_contacts_by_number(&self, username: &str, number: PhoneNumber<&'_ str>) -> Result<Vec<Contact>> {
+    fn find_contacts_by_number(
+        &self,
+        username: &str,
+        number: PhoneNumber<&'_ str>,
+    ) -> Result<Vec<Contact>> {
         let contacts = contacts::table
             .filter(contacts::username.eq(username))
             .filter(contacts::phone_number.eq(number))
