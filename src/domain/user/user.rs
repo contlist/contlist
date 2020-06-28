@@ -81,7 +81,7 @@ pub fn login_user(login_user: LoginUser<'_>, repo: &impl UserRepo) -> Result<Aut
 }
 
 pub fn update_user(
-    username: &str,
+    username: &str, // FIXMI: CurrentUser instead
     update_user: UpdateUser<'_>,
     repo: &impl UserRepo,
 ) -> Result<()> {

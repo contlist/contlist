@@ -1,5 +1,5 @@
-use super::Result;
-use crate::domain::phone_number::PhoneNumber;
+use super::{Error, Result};
+use crate::domain::{phone_number::PhoneNumber, user::CurrentUser};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Clone, Debug)]
@@ -19,6 +19,34 @@ pub struct CreateContact<'a> {
 pub struct UpdateContact<'a> {
     pub contact_name: &'a str,
     pub phone_number: PhoneNumber<&'a str>,
+}
+
+pub fn create_contact(
+    user: &CurrentUser,
+    create_contact: CreateContact<'_>,
+    repo: &impl ContactRepo,
+) -> Result<()> {
+    repo.save_new_contact(user.username.as_str(), create_contact)
+        .map(|_| ())
+}
+
+pub fn get_contacts(user: &CurrentUser, repo: &impl ContactRepo) -> Result<Vec<Contact>> {
+    repo.find_contact_by_username(user.username.as_str())
+}
+
+pub fn update_contact(
+    user: &CurrentUser,
+    id: i64,
+    update_contact: UpdateContact<'_>,
+    repo: &impl ContactRepo,
+) -> Result<()> {
+    repo.update_contact_with_username(user.username.as_str(), id, update_contact)
+        .map(|_| ())
+}
+
+pub fn delete_contact(user: &CurrentUser, id: i64, repo: &impl ContactRepo) -> Result<()> {
+    repo.delete_contact_with_username(user.username.as_str(), id)
+        .map(|_| ())
 }
 
 pub trait ContactRepo {
