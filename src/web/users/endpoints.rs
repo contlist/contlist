@@ -6,14 +6,14 @@ use rocket_contrib::json::Json;
 
 #[post("/register", format = "json", data = "<register_user>")]
 fn register(register_user: Json<RegisterUser>, repo: UserPgRepo) -> Result<()> {
-    user::register_user(&register_user, &repo)
+    user::register_user(register_user.into_inner(), &repo)
         .map_err(Error::from)
         .map(|_| ())
 }
 
 #[post("/login", format = "json", data = "<login_user>")]
 fn login(login_user: Json<LoginUser>, repo: UserPgRepo) -> Result<Json<AuthUser>> {
-    user::login_user(&login_user, &repo)
+    user::login_user(login_user.into_inner(), &repo)
         .map_err(Error::from)
         .map(Json)
 }
@@ -31,7 +31,7 @@ fn update(
     update_user: Json<UpdateUser>,
     repo: UserPgRepo,
 ) -> Result<()> {
-    user::update_user(current_user?.username.as_str(), &update_user, &repo)
+    user::update_user(current_user?.username.as_str(), update_user.into_inner(), &repo)
         .map_err(Error::from)
         .map(|_| ())
 }

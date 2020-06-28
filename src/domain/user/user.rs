@@ -55,7 +55,7 @@ impl CurrentUser {
     }
 }
 
-pub fn register_user(register_user: &RegisterUser<'_>, repo: &impl UserRepo) -> Result<()> {
+pub fn register_user(register_user: RegisterUser<'_>, repo: &impl UserRepo) -> Result<()> {
     repo.save_new_user(register_user)
         .map_err(Error::from)
         .map(|_| ())
@@ -65,7 +65,7 @@ pub fn get_user(username: &str, repo: &impl UserRepo) -> Result<User> {
     repo.find_user_by_username(username)?.ok_or(Error::NotFound)
 }
 
-pub fn login_user(login_user: &LoginUser<'_>, repo: &impl UserRepo) -> Result<AuthUser> {
+pub fn login_user(login_user: LoginUser<'_>, repo: &impl UserRepo) -> Result<AuthUser> {
     let user = repo
         .find_user_by_credentials(login_user)?
         .ok_or(Error::InvalidCredentials(
@@ -82,7 +82,7 @@ pub fn login_user(login_user: &LoginUser<'_>, repo: &impl UserRepo) -> Result<Au
 
 pub fn update_user(
     username: &str,
-    update_user: &UpdateUser<'_>,
+    update_user: UpdateUser<'_>,
     repo: &impl UserRepo,
 ) -> Result<()> {
     repo.update_user(username, update_user)
@@ -91,8 +91,8 @@ pub fn update_user(
 }
 
 pub trait UserRepo {
-    fn save_new_user(&self, user: &RegisterUser<'_>) -> RepoResult<usize>;
+    fn save_new_user(&self, user: RegisterUser<'_>) -> RepoResult<usize>;
     fn find_user_by_username(&self, username: &str) -> RepoResult<Option<User>>;
-    fn find_user_by_credentials(&self, credentials: &LoginUser<'_>) -> RepoResult<Option<User>>;
-    fn update_user(&self, username: &str, user: &UpdateUser<'_>) -> RepoResult<usize>;
+    fn find_user_by_credentials(&self, credentials: LoginUser<'_>) -> RepoResult<Option<User>>;
+    fn update_user(&self, username: &str, user: UpdateUser<'_>) -> RepoResult<usize>;
 }

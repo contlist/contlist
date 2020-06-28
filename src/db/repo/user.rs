@@ -31,7 +31,7 @@ impl UserPgRepo {
 }
 
 impl UserRepo for UserPgRepo {
-    fn save_new_user(&self, user: &RegisterUser) -> Result<usize> {
+    fn save_new_user(&self, user: RegisterUser) -> Result<usize> {
         let (password_hash, password_salt) = hash_password(user.password)?;
 
         let insert_user = InsertUser {
@@ -56,7 +56,7 @@ impl UserRepo for UserPgRepo {
         Ok(user)
     }
 
-    fn find_user_by_credentials(&self, credentials: &LoginUser) -> Result<Option<User>> {
+    fn find_user_by_credentials(&self, credentials: LoginUser) -> Result<Option<User>> {
         let quser = if let Some(quser) = self.find_query_user_by_username(credentials.username)? {
             quser
         } else {
@@ -80,7 +80,7 @@ impl UserRepo for UserPgRepo {
         Ok(user)
     }
 
-    fn update_user(&self, username: &str, user: &crate::domain::user::UpdateUser) -> Result<usize> {
+    fn update_user(&self, username: &str, user: crate::domain::user::UpdateUser) -> Result<usize> {
         let (password_hash, password_salt) = hash_password(user.password)?;
 
         let update_user = UpdateUser {
