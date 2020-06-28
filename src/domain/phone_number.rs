@@ -1,13 +1,15 @@
 use super::utils::OptionExt;
-use diesel::serialize::{self, ToSql, Output};
 use diesel::deserialize::{self, FromSql};
+use diesel::serialize::{self, Output, ToSql};
 use diesel::{backend::Backend, sql_types::Text};
 use serde::{de::Error as DeError, Deserialize, Deserializer, Serialize};
-use std::{convert::TryFrom, ops::Deref, io::Write};
+use std::{convert::TryFrom, io::Write, ops::Deref};
 use thiserror::Error;
 
 /// A string that matches (+)?[0-9]+
-#[derive(Serialize, AsExpression, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
+#[derive(
+    Serialize, AsExpression, FromSqlRow, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug,
+)]
 #[sql_type = "Text"]
 pub struct PhoneNumber<T>(T);
 
@@ -81,6 +83,13 @@ impl<T: AsRef<str>> Deref for PhoneNumber<T> {
     }
 }
 
+impl<T: From<&'static str>> Default for PhoneNumber<T> {
+    fn default() -> Self {
+        let value = T::from("+10000000000");
+        Self(value)
+    }
+}
+
 impl<'de, T: Deserialize<'de> + AsRef<str>> Deserialize<'de> for PhoneNumber<T> {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> std::result::Result<Self, D::Error> {
         T::deserialize(deserializer)
@@ -91,11 +100,11 @@ impl<'de, T: Deserialize<'de> + AsRef<str>> Deserialize<'de> for PhoneNumber<T> 
 impl<DB, T> ToSql<Text, DB> for PhoneNumber<T>
 where
     DB: Backend,
-    T: ToSql<Text, DB> + AsRef<str>
+    T: ToSql<Text, DB> + AsRef<str>,
 {
     fn to_sql<W: Write>(&self, out: &mut Output<W, DB>) -> serialize::Result {
         (&self.0 as &T).to_sql(out)
-    }  
+    }
 }
 
 impl<DB, T> FromSql<Text, DB> for PhoneNumber<T>
