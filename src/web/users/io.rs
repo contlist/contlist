@@ -1,6 +1,6 @@
-use super::error::{Error, Result};
 use crate::db::{Pool, UserPgRepo};
 use crate::domain::user::{CurrentUser, Error as UError};
+use crate::web::error::{Error, Result};
 use boolinator::Boolinator;
 use rocket::request::{self, FromRequest};
 use rocket::{http::Status, outcome::IntoOutcome, Request, State};

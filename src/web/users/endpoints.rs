@@ -1,14 +1,12 @@
-use super::error::{Error, Result};
 use crate::db::UserPgRepo;
 use crate::domain::user::{self, AuthUser, CurrentUser, LoginUser, RegisterUser, UpdateUser, User};
+use crate::web::error::{Error, Result};
 use rocket::Route;
 use rocket_contrib::json::Json;
 
 #[post("/register", format = "json", data = "<register_user>")]
 fn register(register_user: Json<RegisterUser>, repo: UserPgRepo) -> Result<()> {
-    user::register_user(register_user.into_inner(), &repo)
-        .map_err(Error::from)
-        .map(|_| ())
+    user::register_user(register_user.into_inner(), &repo).map_err(Error::from)
 }
 
 #[post("/login", format = "json", data = "<login_user>")]
@@ -25,19 +23,13 @@ fn get(username: String, repo: UserPgRepo) -> Result<Json<User>> {
         .map(Json)
 }
 
-#[post("/update", format = "json", data = "<update_user>")]
+#[put("/", format = "json", data = "<update_user>")]
 fn update(
     current_user: Result<CurrentUser>,
     update_user: Json<UpdateUser>,
     repo: UserPgRepo,
 ) -> Result<()> {
-    user::update_user(
-        &current_user?,
-        update_user.into_inner(),
-        &repo,
-    )
-    .map_err(Error::from)
-    .map(|_| ())
+    user::update_user(&current_user?, update_user.into_inner(), &repo).map_err(Error::from)
 }
 
 pub fn api() -> Vec<Route> {
