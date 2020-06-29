@@ -1,4 +1,4 @@
-use super::{Error, Result};
+use super::Result;
 use crate::domain::{phone_number::PhoneNumber, user::CurrentUser};
 use serde::{Deserialize, Serialize};
 

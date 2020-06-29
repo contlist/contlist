@@ -32,7 +32,7 @@ fn update(
     repo: UserPgRepo,
 ) -> Result<()> {
     user::update_user(
-        current_user?.username.as_str(),
+        &current_user?,
         update_user.into_inner(),
         &repo,
     )

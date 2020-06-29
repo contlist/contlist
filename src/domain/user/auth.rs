@@ -1,5 +1,6 @@
 use super::error::{Error, Result};
 use chrono::{Duration, Utc};
+use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use jsonwebtoken::{self as jwt, Algorithm};
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -36,5 +37,14 @@ impl Claims {
         jwt::decode(token, &key, &validation)
             .map_err(Error::from)
             .map(|token_data| token_data.claims)
+    }
+}
+
+impl From<JwtError> for Error {
+    fn from(src: JwtError) -> Self {
+        match src.kind() {
+            JwtErrorKind::ExpiredSignature => Error::ExpiredTokenError,
+            _ => Error::TokenError(Box::new(src).into()),
+        }
     }
 }

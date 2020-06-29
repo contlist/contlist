@@ -1,6 +1,6 @@
-use super::{Error, Result};
 use crate::db::models::user::{InsertUser, QueryUser, UpdateUser};
 use crate::db::pool::PooledConnection;
+use crate::domain::user::{Error, Result};
 use crate::domain::user::{LoginUser, RegisterUser, User, UserRepo};
 use crate::schema::users;
 use boolinator::Boolinator;

@@ -1,6 +1,6 @@
 use super::error::{Error, Result};
 use crate::db::{Pool, UserPgRepo};
-use crate::domain::user::CurrentUser;
+use crate::domain::user::{CurrentUser, Error as UError};
 use boolinator::Boolinator;
 use rocket::request::{self, FromRequest};
 use rocket::{http::Status, outcome::IntoOutcome, Request, State};
@@ -14,7 +14,8 @@ impl FromRequest<'_, '_> for UserPgRepo {
             .unwrap()
             .get()
             .map_err(|e| Box::new(e).into())
-            .map_err(Error::RepoError)
+            .map_err(UError::RepoError)
+            .map_err(Error::UserError)
             .into_outcome(Status::InternalServerError)
             .map(UserPgRepo::new)
     }

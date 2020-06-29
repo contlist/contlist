@@ -1,5 +1,4 @@
 use super::{auth::Claims, Error, Result};
-use crate::db::Result as RepoResult;
 use chrono::Duration;
 use serde::{Deserialize, Serialize};
 
@@ -68,9 +67,7 @@ pub fn get_user(username: &str, repo: &impl UserRepo) -> Result<User> {
 pub fn login_user(login_user: LoginUser<'_>, repo: &impl UserRepo) -> Result<AuthUser> {
     let user = repo
         .find_user_by_credentials(login_user)?
-        .ok_or(Error::InvalidCredentials(
-            anyhow::Error::msg("invalid login or password").into(),
-        ))?;
+        .ok_or(Error::InvalidCredentials)?;
 
     let auth_user = AuthUser {
         token: user.as_token()?,
@@ -81,18 +78,18 @@ pub fn login_user(login_user: LoginUser<'_>, repo: &impl UserRepo) -> Result<Aut
 }
 
 pub fn update_user(
-    username: &str, // FIXMI: CurrentUser instead
+    user: &CurrentUser,
     update_user: UpdateUser<'_>,
     repo: &impl UserRepo,
 ) -> Result<()> {
-    repo.update_user(username, update_user)
+    repo.update_user(user.username.as_str(), update_user)
         .map_err(Error::from)
         .map(|_| ())
 }
 
 pub trait UserRepo {
-    fn save_new_user(&self, user: RegisterUser<'_>) -> RepoResult<usize>;
-    fn find_user_by_username(&self, username: &str) -> RepoResult<Option<User>>;
-    fn find_user_by_credentials(&self, credentials: LoginUser<'_>) -> RepoResult<Option<User>>;
-    fn update_user(&self, username: &str, user: UpdateUser<'_>) -> RepoResult<usize>;
+    fn save_new_user(&self, user: RegisterUser<'_>) -> Result<usize>;
+    fn find_user_by_username(&self, username: &str) -> Result<Option<User>>;
+    fn find_user_by_credentials(&self, credentials: LoginUser<'_>) -> Result<Option<User>>;
+    fn update_user(&self, username: &str, user: UpdateUser<'_>) -> Result<usize>;
 }
