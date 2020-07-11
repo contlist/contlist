@@ -6,6 +6,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error("failed to find contact")]
+    #[allow(dead_code)]
     NotFound,
     #[error("error occurred while working with repo: {0}")]
     RepoError(Box<dyn StdError + Send + Sync>),
