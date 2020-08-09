@@ -17,7 +17,7 @@ impl ContactPgRepo {
 }
 
 impl ContactRepo for ContactPgRepo {
-    fn save_new_contact(&self, username: &str, contact: CreateContact<'_>) -> Result<usize> {
+    fn save_new_contact(&self, username: &str, contact: CreateContact<'_>) -> Result<i64> {
         let insert_contact = InsertContact {
             username,
             contact_name: contact.contact_name,
@@ -26,7 +26,8 @@ impl ContactRepo for ContactPgRepo {
 
         diesel::insert_into(contacts::table)
             .values(&insert_contact)
-            .execute(&self.connection)
+            .returning(contacts::id)
+            .get_result(&self.connection)
             .map_err(Error::from)
     }
 

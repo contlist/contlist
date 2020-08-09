@@ -25,9 +25,8 @@ pub fn create_contact(
     user: &CurrentUser,
     create_contact: CreateContact<'_>,
     repo: &impl ContactRepo,
-) -> Result<()> {
+) -> Result<i64> {
     repo.save_new_contact(user.username.as_str(), create_contact)
-        .map(|_| ())
 }
 
 pub fn get_contacts(user: &CurrentUser, repo: &impl ContactRepo) -> Result<Vec<Contact>> {
@@ -50,7 +49,7 @@ pub fn delete_contact(user: &CurrentUser, id: i64, repo: &impl ContactRepo) -> R
 }
 
 pub trait ContactRepo {
-    fn save_new_contact(&self, username: &str, contact: CreateContact<'_>) -> Result<usize>;
+    fn save_new_contact(&self, username: &str, contact: CreateContact<'_>) -> Result<i64>;
     fn find_contact(&self, id: i64) -> Result<Option<Contact>>;
     fn find_contact_by_username(&self, username: &str) -> Result<Vec<Contact>>;
     fn find_contacts_by_name(&self, username: &str, name: &str) -> Result<Vec<Contact>>;

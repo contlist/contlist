@@ -10,8 +10,10 @@ fn create(
     current_user: Result<CurrentUser>,
     create_contact: Json<CreateContact>,
     repo: ContactPgRepo,
-) -> Result<()> {
-    contact::create_contact(&current_user?, create_contact.into_inner(), &repo).map_err(Error::from)
+) -> Result<Json<i64>> {
+    contact::create_contact(&current_user?, create_contact.into_inner(), &repo)
+        .map_err(Error::from)
+        .map(Json)
 }
 
 #[get("/")]
