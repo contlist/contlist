@@ -5,6 +5,7 @@ mod users;
 use users::endpoints as user;
 
 mod error;
+pub use error::{Error, Result};
 
 mod spa;
 
