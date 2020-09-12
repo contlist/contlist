@@ -1,4 +1,4 @@
-use super::utils::OptionExt;
+use crate::utils::OptionExt;
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
 use diesel::{backend::Backend, sql_types::Text};
