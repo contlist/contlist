@@ -1,4 +1,4 @@
-use crate::db::UserPgRepo;
+use crate::infrastructure::repository::postgres::UserPgRepo;
 use crate::domain::user::{self, AuthUser, CurrentUser, LoginUser, RegisterUser, UpdateUser, User};
 use crate::log::ResultInspect;
 use crate::utils;

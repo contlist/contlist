@@ -6,8 +6,8 @@ extern crate rocket;
 #[macro_use]
 extern crate diesel;
 
-mod db;
 mod domain;
+mod infrastructure;
 mod log;
 mod schema;
 mod utils;

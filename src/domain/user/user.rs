@@ -55,9 +55,7 @@ impl CurrentUser {
 }
 
 pub fn register_user(register_user: RegisterUser<'_>, repo: &impl UserRepo) -> Result<()> {
-    repo.save_new_user(register_user)
-        .map_err(Error::from)
-        .map(|_| ())
+    repo.save_new_user(register_user).map(|_| ())
 }
 
 pub fn get_user(username: &str, repo: &impl UserRepo) -> Result<User> {
@@ -83,7 +81,6 @@ pub fn update_user(
     repo: &impl UserRepo,
 ) -> Result<()> {
     repo.update_user(user.username.as_str(), update_user)
-        .map_err(Error::from)
         .map(|_| ())
 }
 

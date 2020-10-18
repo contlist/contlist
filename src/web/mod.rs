@@ -9,13 +9,13 @@ pub use error::{Error, Result};
 
 mod spa;
 
-use crate::db;
+use crate::infrastructure::repository::postgres;
 use rocket::config::{Config, Environment};
 use rocket::Rocket;
 use rocket_cors::CorsOptions;
 
 pub fn rocket() -> Rocket {
-    let db_pool = db::init_pool();
+    let db_pool = postgres::init_pool();
 
     let cors = CorsOptions::default()
         .to_cors()

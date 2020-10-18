@@ -1,4 +1,4 @@
-use crate::db::{ContactPgRepo, Pool};
+use crate::infrastructure::repository::postgres::{ContactPgRepo, Pool};
 use crate::domain::contact::Error as CError;
 use crate::web::error::Error;
 use rocket::request::{self, FromRequest};

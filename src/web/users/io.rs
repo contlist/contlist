@@ -1,4 +1,4 @@
-use crate::db::{Pool, UserPgRepo};
+use crate::infrastructure::repository::postgres::{Pool, UserPgRepo};
 use crate::domain::user::{CurrentUser, Error as UError};
 use crate::web::error::{Error, Result};
 use boolinator::Boolinator;

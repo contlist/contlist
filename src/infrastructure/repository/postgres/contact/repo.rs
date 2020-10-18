@@ -1,8 +1,8 @@
-use crate::db::models::contact::{InsertContact, QueryContact, UpdateContact};
-use crate::db::PooledConnection;
+use super::model::{InsertContact, QueryContact, UpdateContact};
 use crate::domain::contact::{Contact, ContactRepo, CreateContact};
 use crate::domain::contact::{Error, Result};
 use crate::domain::phone_number::PhoneNumber;
+use crate::infrastructure::repository::postgres::pool::PooledConnection;
 use crate::schema::contacts;
 use diesel::{prelude::*, result::Error as DieselError};
 

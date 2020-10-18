@@ -1,7 +1,7 @@
-use crate::db::models::user::{InsertUser, QueryUser, UpdateUser};
-use crate::db::pool::PooledConnection;
+use super::model::{InsertUser, QueryUser, UpdateUser};
 use crate::domain::user::{Error, Result};
 use crate::domain::user::{LoginUser, RegisterUser, User, UserRepo};
+use crate::infrastructure::repository::postgres::pool::PooledConnection;
 use crate::schema::users;
 use boolinator::Boolinator;
 use diesel::prelude::*;

@@ -1,4 +1,4 @@
-use crate::db::ContactPgRepo;
+use crate::infrastructure::repository::postgres::ContactPgRepo;
 use crate::domain::contact::{self, Contact, CreateContact, UpdateContact};
 use crate::domain::user::CurrentUser;
 use crate::log::ResultInspect;
