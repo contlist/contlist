@@ -1,6 +1,6 @@
-use crate::infrastructure::repository::postgres::ContactPgRepo;
 use crate::domain::contact::{self, Contact, CreateContact, UpdateContact};
 use crate::domain::user::CurrentUser;
+use crate::infrastructure::repository::postgres::ContactPgRepo;
 use crate::log::ResultInspect;
 use crate::utils;
 use crate::web::error::{Error, Result};

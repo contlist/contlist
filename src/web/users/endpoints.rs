@@ -1,5 +1,5 @@
-use crate::infrastructure::repository::postgres::UserPgRepo;
 use crate::domain::user::{self, AuthUser, CurrentUser, LoginUser, RegisterUser, UpdateUser, User};
+use crate::infrastructure::repository::postgres::UserPgRepo;
 use crate::log::ResultInspect;
 use crate::utils;
 use crate::web::error::{Error, Result};

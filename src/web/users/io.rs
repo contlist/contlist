@@ -1,5 +1,5 @@
-use crate::infrastructure::repository::postgres::{Pool, UserPgRepo};
 use crate::domain::user::{CurrentUser, Error as UError};
+use crate::infrastructure::repository::postgres::{Pool, UserPgRepo};
 use crate::web::error::{Error, Result};
 use boolinator::Boolinator;
 use rocket::request::{self, FromRequest};

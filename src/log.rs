@@ -86,13 +86,13 @@ impl<'p> LoggerConfig<'p> {
         self.file_release_level = level;
         self
     }
-    
+
     /// returns debug level for file output
     pub fn file_debug_level(&mut self, level: LevelFilter) -> &Self {
         self.file_debug_level = level;
         self
     }
-    
+
     /// return release level for std output
     pub fn stdout_release_level(&mut self, level: LevelFilter) -> &Self {
         self.stdout_release_level = level;

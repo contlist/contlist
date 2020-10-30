@@ -1,5 +1,5 @@
 use crate::domain::security::token_handler::TokenHandler;
-use crate::domain::user::{Error, Result, auth::Claims};
+use crate::domain::user::{auth::Claims, Error, Result};
 use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use jsonwebtoken::{self as jwt, Algorithm};
 use std::env;

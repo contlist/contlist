@@ -1,5 +1,5 @@
-use crate::infrastructure::repository::postgres::{ContactPgRepo, Pool};
 use crate::domain::contact::Error as CError;
+use crate::infrastructure::repository::postgres::{ContactPgRepo, Pool};
 use crate::web::error::Error;
 use rocket::request::{self, FromRequest};
 use rocket::{http::Status, outcome::IntoOutcome, Request, State};
