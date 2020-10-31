@@ -1,5 +1,5 @@
-use crate::domain::security::hasher::Hasher;
 use crate::domain::user::{Error, Result};
+use crate::domain_logic::security::hasher::Hasher;
 
 /// Hasker uses Argon 2 algorithm
 pub struct ArgonHasher;
