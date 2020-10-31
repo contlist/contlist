@@ -6,10 +6,10 @@ use std::env;
 
 pub struct JwtTokenHandler;
 
-impl TokenHandler for JwtTokenHandler {
+impl TokenHandler for &JwtTokenHandler {
     type Claims = Claims;
 
-    fn generate_token(claims: Self::Claims) -> Result<String> {
+    fn generate_token(self, claims: Self::Claims) -> Result<String> {
         use jwt::{EncodingKey, Header};
         let secret_key = env::var("JWT_SECRET_KEY").expect("failed to read environment variable"); // TODO: move to config
 
@@ -18,7 +18,7 @@ impl TokenHandler for JwtTokenHandler {
         jwt::encode(&header, &claims, &key).map_err(Error::from)
     }
 
-    fn extract_claims(token: &str) -> Result<Self::Claims> {
+    fn extract_claims(self, token: &str) -> Result<Self::Claims> {
         use jwt::{DecodingKey, Validation};
         let secret_key = env::var("JWT_SECRET_KEY").expect("failed to read environment variable"); // TODO: move to config
 
