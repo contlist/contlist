@@ -1,4 +1,4 @@
-use crate::domain::phone_number::PhoneNumber;
+use crate::domain_model::phone_number::PhoneNumber;
 use crate::schema::contacts;
 use chrono::{DateTime, Utc};
 

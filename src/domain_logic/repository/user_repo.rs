@@ -1,4 +1,4 @@
-use crate::domain::user::{Result, User};
+use crate::domain_model::entities::user::{Result, User};
 
 pub trait UserRepo {
     fn save_new_user(&self, username: &str, password: &str) -> Result<usize>;
