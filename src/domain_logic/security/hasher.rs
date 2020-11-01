@@ -1,6 +1,13 @@
 use crate::domain::user::Result;
 
-/// Hashes 'str' with salt
+/// A service to hashing and verification passwords
 pub trait Hasher {
-    fn hash<S: AsRef<[u8]>>(self, src: &str, salt: S) -> Result<Vec<u8>>;
+    /// hashes 'pwd' with 'salt'
+    fn hash<S: AsRef<[u8]>>(self, pwd: &str, salt: S) -> Result<Vec<u8>>;
+
+    /// checks if 'hash' obtained from 'pwd'
+    fn verify<H, S>(self, pwd: &str, hash: H, salt: S) -> Result<bool>
+    where
+        H: AsRef<[u8]>,
+        S: AsRef<[u8]>;
 }
