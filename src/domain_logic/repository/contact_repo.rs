@@ -1,4 +1,4 @@
-use crate::domain::contact::{Contact, Result};
+use crate::domain_model::entities::contact::{Contact, Result};
 use crate::domain::phone_number::PhoneNumber;
 
 pub trait ContactRepo {
