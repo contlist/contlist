@@ -1,4 +1,4 @@
-use crate::domain::user::Result;
+use crate::domain_model::entities::user::Result;
 use serde::{de::DeserializeOwned, Serialize};
 
 pub trait TokenHandler {

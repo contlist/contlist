@@ -1,5 +1,5 @@
-use crate::domain_model::entities::contact::{Contact, Result};
 use crate::domain::phone_number::PhoneNumber;
+use crate::domain_model::entities::contact::{Contact, Result};
 
 pub trait ContactRepo {
     fn save_new_contact(

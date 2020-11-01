@@ -1,4 +1,4 @@
-use crate::domain::user::Result;
+use crate::domain_model::entities::user::Result;
 
 /// A service to hashing and verification passwords
 pub trait Hasher {

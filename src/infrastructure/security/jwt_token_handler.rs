@@ -1,5 +1,6 @@
-use crate::domain::user::{auth::Claims, Error, Result};
 use crate::domain_logic::security::token_handler::TokenHandler;
+use crate::domain_model::claims::Claims;
+use crate::domain_model::entities::user::{Error, Result};
 use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use jsonwebtoken::{self as jwt, Algorithm};
 use std::env;
@@ -30,12 +31,11 @@ impl TokenHandler for &JwtTokenHandler {
     }
 }
 
-// postponed until refactoring
-// impl From<JwtError> for Error {
-//     fn from(src: JwtError) -> Self {
-//         match src.kind() {
-//             JwtErrorKind::ExpiredSignature => Error::ExpiredTokenError,
-//             _ => Error::TokenError(Box::new(src).into()),
-//         }
-//     }
-// }
+impl From<JwtError> for Error {
+    fn from(src: JwtError) -> Self {
+        match src.kind() {
+            JwtErrorKind::ExpiredSignature => Error::ExpiredTokenError,
+            _ => Error::TokenError(Box::new(src).into()),
+        }
+    }
+}
