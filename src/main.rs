@@ -6,6 +6,7 @@ extern crate rocket;
 #[macro_use]
 extern crate diesel;
 
+mod application_logic;
 mod domain;
 mod domain_logic;
 mod domain_model;
