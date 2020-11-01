@@ -8,6 +8,7 @@ extern crate diesel;
 
 mod domain;
 mod domain_logic;
+mod domain_model;
 mod infrastructure;
 mod log;
 mod schema;
