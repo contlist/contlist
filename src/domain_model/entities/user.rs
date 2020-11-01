@@ -1,10 +1,10 @@
-use getset::MutGetters;
+use getset::{Getters, MutGetters};
 use serde::Serialize;
 use std::error::Error as StdError;
 use thiserror::Error;
 
-#[derive(Serialize, Clone, MutGetters, Debug)]
-#[getset[get_mut = "pub"]]
+#[derive(Serialize, Clone, Getters, MutGetters, Debug)]
+#[getset[get = "pub", get_mut = "pub"]]
 pub struct User {
     username: String,
     password_hash: String,
