@@ -3,6 +3,7 @@ use getset::{Getters, MutGetters};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Getters, MutGetters, Debug)]
+#[getset(get = "pub", get_mut = "pub")]
 pub struct Claims {
     username: String,
     exp: i64,
