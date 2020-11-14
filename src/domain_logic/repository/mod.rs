@@ -9,3 +9,5 @@ pub use contact_model::*;
 
 mod contact_repo;
 pub use contact_repo::*;
+
+pub mod pool;

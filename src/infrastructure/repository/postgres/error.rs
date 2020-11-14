@@ -1,33 +1,25 @@
-use crate::domain::user::Error;
-use argon2::Error as ArgError;
-use base64::DecodeError as Base64Error;
+use crate::domain_model::entities::contact::Error as CError;
+use crate::domain_model::entities::user::Error as UError;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 
-impl From<DieselError> for Error {
+impl From<DieselError> for UError {
     fn from(derror: DieselError) -> Self {
         match derror {
             DieselError::DatabaseError(
                 DatabaseErrorKind::UniqueViolation | DatabaseErrorKind::ForeignKeyViolation,
                 ..,
-            ) => Error::AlreadyExistsError,
+            ) => UError::AlreadyExistsError,
             e => {
                 let error = anyhow::Error::new(e);
-                Error::RepoError(error.into())
+                UError::RepoError(error.into())
             }
         }
     }
 }
 
-impl From<ArgError> for Error {
-    fn from(aerror: ArgError) -> Self {
-        let error = anyhow::Error::msg(aerror);
-        Error::RepoError(error.into())
-    }
-}
-
-impl From<Base64Error> for Error {
-    fn from(berror: Base64Error) -> Self {
-        let error = anyhow::Error::new(berror);
-        Error::RepoError(error.into())
+impl From<DieselError> for CError {
+    fn from(derror: DieselError) -> Self {
+        let error = anyhow::Error::new(derror);
+        CError::RepoError(error.into())
     }
 }

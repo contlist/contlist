@@ -1,6 +1,6 @@
 use crate::domain::user::CurrentUser;
 use crate::log::ResultInspectRef;
-use crate::web::Result as WebResult;
+use crate::infrastructure::web::error::Result as WebResult;
 
 pub trait OptionExt<E> {
     fn err_and<T>(self, ok: T) -> Result<T, E>;

@@ -1,4 +1,4 @@
-#![feature(proc_macro_hygiene, decl_macro, or_patterns, box_syntax)]
+#![feature(proc_macro_hygiene, decl_macro, or_patterns, box_syntax, trait_alias)]
 
 #[macro_use]
 extern crate rocket;
@@ -15,7 +15,6 @@ mod log;
 mod module;
 mod schema;
 mod utils;
-mod web;
 
 fn main() {
     dotenv::dotenv().expect("failed to set environment variables");
@@ -23,5 +22,5 @@ fn main() {
         .init()
         .expect("failed to init logger");
 
-    web::rocket().launch();
+    // web::rocket().launch();
 }

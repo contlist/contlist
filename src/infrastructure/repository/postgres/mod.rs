@@ -1,10 +1,7 @@
-mod user;
-pub use user::*;
+mod user_repo;
+pub use user_repo::*;
 
-mod contact;
-pub use contact::*;
-
-mod pool;
-pub use pool::*;
+mod contact_repo;
+pub use contact_repo::*;
 
 mod error;

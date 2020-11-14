@@ -1,40 +1,42 @@
-use super::model::{InsertContact, QueryContact, UpdateContact};
-use crate::domain::contact::{Contact, ContactRepo, CreateContact};
-use crate::domain::contact::{Error, Result};
-use crate::domain::phone_number::PhoneNumber;
-use crate::infrastructure::repository::postgres::pool::PooledConnection;
+use crate::domain_logic::repository::{ContactRepo, InsertContact, QueryContact, UpdateContact};
+use crate::domain_model::entities::contact::{Contact, Error, Result};
+use crate::domain_model::phone_number::PhoneNumber;
+use crate::infrastructure::repository::connection::R2D2Connection;
 use crate::schema::contacts;
-use diesel::{prelude::*, result::Error as DieselError};
+use diesel::{pg::PgConnection, prelude::*, result::Error as DieselError};
+use shaku::Provider;
 
+#[derive(Provider)]
+#[shaku(interface = ContactRepo)]
 pub struct ContactPgRepo {
-    connection: PooledConnection,
-}
-
-impl ContactPgRepo {
-    pub fn new(connection: PooledConnection) -> Self {
-        Self { connection }
-    }
+    #[shaku(provide)]
+    conn: Box<R2D2Connection<PgConnection>>,
 }
 
 impl ContactRepo for ContactPgRepo {
-    fn save_new_contact(&self, username: &str, contact: CreateContact<'_>) -> Result<i64> {
+    fn save_new_contact(
+        &self,
+        username: &str,
+        contact_name: &str,
+        phone_number: PhoneNumber<&'_ str>,
+    ) -> Result<i64> {
         let insert_contact = InsertContact {
             username,
-            contact_name: contact.contact_name,
-            phone_number: contact.phone_number,
+            contact_name,
+            phone_number,
         };
 
         diesel::insert_into(contacts::table)
             .values(&insert_contact)
             .returning(contacts::id)
-            .get_result(&self.connection)
+            .get_result(&**self.conn)
             .map_err(Error::from)
     }
 
     fn find_contact(&self, id: i64) -> Result<Option<Contact>> {
         let contact = contacts::table
             .find(id)
-            .first::<QueryContact>(&self.connection)
+            .first::<QueryContact>(&**self.conn)
             .map(Some)
             .or_else(|e| match e {
                 DieselError::NotFound => Ok(None),
@@ -45,10 +47,10 @@ impl ContactRepo for ContactPgRepo {
         Ok(contact)
     }
 
-    fn find_contact_by_username(&self, username: &str) -> Result<Vec<Contact>> {
+    fn find_contacts_by_username(&self, username: &str) -> Result<Vec<Contact>> {
         let contacts = contacts::table
             .filter(contacts::username.eq(username))
-            .load::<QueryContact>(&self.connection)
+            .load::<QueryContact>(&**self.conn)
             .map_err(Error::from)?
             .iter()
             .cloned()
@@ -62,7 +64,7 @@ impl ContactRepo for ContactPgRepo {
         let contacts = contacts::table
             .filter(contacts::username.eq(username))
             .filter(contacts::contact_name.eq(name))
-            .load::<QueryContact>(&self.connection)
+            .load::<QueryContact>(&**self.conn)
             .map_err(Error::from)?
             .iter()
             .cloned()
@@ -80,7 +82,7 @@ impl ContactRepo for ContactPgRepo {
         let contacts = contacts::table
             .filter(contacts::username.eq(username))
             .filter(contacts::phone_number.eq(number))
-            .load::<QueryContact>(&self.connection)
+            .load::<QueryContact>(&**self.conn)
             .map_err(Error::from)?
             .iter()
             .cloned()
@@ -90,26 +92,17 @@ impl ContactRepo for ContactPgRepo {
         Ok(contacts)
     }
 
-    fn update_contact(
-        &self,
-        id: i64,
-        contact: crate::domain::contact::UpdateContact<'_>,
-    ) -> Result<usize> {
-        let update_contact = UpdateContact::from(contact);
-
-        diesel::update(contacts::table.find(id))
-            .set(&update_contact)
-            .execute(&self.connection)
-            .map_err(Error::from)
-    }
-
     fn update_contact_with_username(
         &self,
         username: &str,
         id: i64,
-        contact: crate::domain::contact::UpdateContact<'_>,
+        contact_name: &str,
+        phone_number: PhoneNumber<&'_ str>,
     ) -> Result<usize> {
-        let update_contact = UpdateContact::from(contact);
+        let update_contact = UpdateContact {
+            contact_name,
+            phone_number,
+        };
 
         diesel::update(
             contacts::table
@@ -117,14 +110,8 @@ impl ContactRepo for ContactPgRepo {
                 .filter(contacts::id.eq(id)),
         )
         .set(&update_contact)
-        .execute(&self.connection)
+        .execute(&**self.conn)
         .map_err(Error::from)
-    }
-
-    fn delete_contact(&self, id: i64) -> Result<usize> {
-        diesel::delete(contacts::table.find(id))
-            .execute(&self.connection)
-            .map_err(Error::from)
     }
 
     fn delete_contact_with_username(&self, username: &str, id: i64) -> Result<usize> {
@@ -133,33 +120,17 @@ impl ContactRepo for ContactPgRepo {
                 .filter(contacts::username.eq(username))
                 .filter(contacts::id.eq(id)),
         )
-        .execute(&self.connection)
+        .execute(&**self.conn)
         .map_err(Error::from)
     }
 }
 
-impl From<DieselError> for Error {
-    fn from(value: DieselError) -> Self {
-        let error = anyhow::Error::new(value);
-        Error::RepoError(error.into())
-    }
-}
-
 impl From<QueryContact> for Contact {
-    fn from(value: QueryContact) -> Self {
-        Self {
-            id: value.id,
-            contact_name: value.contact_name,
-            phone_number: value.phone_number,
-        }
-    }
-}
-
-impl<'a> From<crate::domain::contact::UpdateContact<'a>> for UpdateContact<'a> {
-    fn from(value: crate::domain::contact::UpdateContact<'a>) -> Self {
-        Self {
-            contact_name: value.contact_name,
-            phone_number: value.phone_number,
-        }
+    fn from(query_contact: QueryContact) -> Self {
+        Self::new(
+            query_contact.id,
+            query_contact.contact_name,
+            query_contact.phone_number,
+        )
     }
 }
