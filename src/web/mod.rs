@@ -7,8 +7,6 @@ use users::endpoints as user;
 mod error;
 pub use error::{Error, Result};
 
-mod spa;
-
 use crate::infrastructure::repository::postgres;
 use rocket::config::{Config, Environment};
 use rocket::Rocket;
@@ -29,7 +27,6 @@ pub fn rocket() -> Rocket {
 
     rocket::custom(config)
         .mount("/", rocket_cors::catch_all_options_routes())
-        .mount("/", spa::api())
         .mount("/user", user::api())
         .mount("/contact", contact::api())
         .manage(db_pool)

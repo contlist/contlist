@@ -11,6 +11,16 @@ pub struct User {
     password_salt: String,
 }
 
+impl User {
+    pub fn new(username: String, password_hash: String, password_salt: String) -> Self {
+        Self {
+            username,
+            password_hash,
+            password_salt,
+        }
+    }
+}
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]

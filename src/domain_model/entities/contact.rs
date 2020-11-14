@@ -12,6 +12,16 @@ pub struct Contact {
     phone_number: PhoneNumber<String>,
 }
 
+impl Contact {
+    pub fn new(id: i64, contact_name: String, phone_number: PhoneNumber<String>) -> Self {
+        Self {
+            id,
+            contact_name,
+            phone_number,
+        }
+    }
+}
+
 pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Error, Debug)]
