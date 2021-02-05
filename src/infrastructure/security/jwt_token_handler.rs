@@ -5,6 +5,7 @@ use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use jsonwebtoken::{self as jwt, Algorithm};
 use std::env;
 
+#[derive(Debug)]
 pub struct JwtTokenHandler;
 
 impl TokenHandler for JwtTokenHandler {

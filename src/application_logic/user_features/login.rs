@@ -6,6 +6,7 @@ use boolinator::Boolinator;
 use chrono::Duration;
 use getset::{Getters, MutGetters};
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
@@ -23,19 +24,18 @@ pub struct AuthData {
 
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Login<R, H, T> {
-    repo: R,
-    hasher: H,
-    token_handler: T,
+pub struct Login {
+    repo: Arc<dyn UserRepo>,
+    hasher: Arc<dyn Hasher>,
+    token_handler: Arc<dyn TokenHandler<Claims = Claims>>,
 }
 
-impl<R, H, T> Login<R, H, T>
-where
-    R: UserRepo,
-    H: Hasher,
-    T: TokenHandler<Claims = Claims>,
-{
-    pub fn new(repo: R, hasher: H, token_handler: T) -> Self {
+impl Login {
+    pub fn new(
+        repo: Arc<dyn UserRepo>,
+        hasher: Arc<dyn Hasher>,
+        token_handler: Arc<dyn TokenHandler<Claims = Claims>>,
+    ) -> Self {
         Self {
             repo,
             hasher,
@@ -52,7 +52,7 @@ where
         let hash = base64::decode(user.password_hash())?;
         let salt = base64::decode(user.password_salt())?;
         self.hasher
-            .verify(login_data.password, hash, salt)?
+            .verify(login_data.password, hash.as_slice(), salt.as_slice())?
             .as_result((), Error::InvalidCredentials)?;
 
         let duration = Duration::minutes(15); // TODO: move to config

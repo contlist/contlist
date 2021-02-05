@@ -1,18 +1,16 @@
 use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::entities::contact::{Contact, Result};
 use getset::Getters;
+use std::sync::Arc;
 
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct List<R> {
-    repo: R,
+pub struct List {
+    repo: Arc<dyn ContactRepo>,
 }
 
-impl<R> List<R>
-where
-    R: ContactRepo,
-{
-    pub fn new(repo: R) -> Self {
+impl List {
+    pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
         Self { repo }
     }
 

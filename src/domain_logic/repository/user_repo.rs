@@ -1,6 +1,7 @@
 use crate::domain_model::entities::user::{Result, User};
+use std::fmt::Debug;
 
-pub trait UserRepo {
+pub trait UserRepo: Debug {
     fn save_new_user(
         &self,
         username: &str,

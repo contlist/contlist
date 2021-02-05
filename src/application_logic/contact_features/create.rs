@@ -2,6 +2,7 @@ use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::{entities::contact::Result, phone_number::PhoneNumber};
 use getset::{Getters, MutGetters};
 use serde::Deserialize;
+use std::sync::Arc;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
@@ -12,15 +13,12 @@ pub struct CreateData<'a> {
 
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Create<R> {
-    repo: R,
+pub struct Create {
+    repo: Arc<dyn ContactRepo>,
 }
 
-impl<R> Create<R>
-where
-    R: ContactRepo,
-{
-    pub fn new(repo: R) -> Self {
+impl Create {
+    pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
         Self { repo }
     }
 
