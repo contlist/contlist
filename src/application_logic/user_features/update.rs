@@ -18,16 +18,16 @@ pub struct Update<R, H> {
     hasher: H,
 }
 
-impl<'a, R, H> Update<R, H>
+impl<R, H> Update<R, H>
 where
     R: UserRepo,
-    &'a H: Hasher + 'static,
+    H: Hasher + 'static,
 {
     pub fn new(repo: R, hasher: H) -> Self {
         Self { repo, hasher }
     }
 
-    pub fn handle(&'a self, username: &str, update_data: UpdateData<'_>) -> Result<()> {
+    pub fn handle(&self, username: &str, update_data: UpdateData<'_>) -> Result<()> {
         let mut rng = rand::thread_rng();
         let salt = salt::generate(&mut rng);
         let hash = self.hasher.hash(update_data.password, salt)?;

@@ -19,16 +19,16 @@ pub struct Regisetr<R, H> {
     hasher: H,
 }
 
-impl<'a, R, H> Regisetr<R, H>
+impl<R, H> Regisetr<R, H>
 where
     R: UserRepo,
-    &'a H: Hasher + 'static,
+    H: Hasher,
 {
     pub fn new(repo: R, hasher: H) -> Self {
         Self { repo, hasher }
     }
 
-    pub fn handle(&'a self, register_data: RegisterData<'_>) -> Result<()> {
+    pub fn handle(self, register_data: RegisterData<'_>) -> Result<()> {
         let mut rng = rand::thread_rng();
         let salt = salt::generate(&mut rng);
         let hash = self.hasher.hash(register_data.password, salt)?;

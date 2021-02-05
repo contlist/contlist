@@ -29,11 +29,11 @@ pub struct Login<R, H, T> {
     token_handler: T,
 }
 
-impl<'a, R, H, T> Login<R, H, T>
+impl<R, H, T> Login<R, H, T>
 where
     R: UserRepo,
-    &'a H: Hasher + 'static,
-    &'a T: TokenHandler<Claims = Claims> + 'static,
+    H: Hasher,
+    T: TokenHandler<Claims = Claims>,
 {
     pub fn new(repo: R, hasher: H, token_handler: T) -> Self {
         Self {
@@ -43,7 +43,7 @@ where
         }
     }
 
-    pub fn handle(&'a self, login_data: LoginData) -> Result<AuthData> {
+    pub fn handle(&self, login_data: LoginData) -> Result<AuthData> {
         let user = self
             .repo
             .find_user_by_username(login_data.username)?
