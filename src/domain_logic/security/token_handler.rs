@@ -1,8 +1,9 @@
 use crate::domain_model::entities::user::Result;
 use serde::{de::DeserializeOwned, Serialize};
+use shaku::Interface;
 use std::fmt::Debug;
 
-pub trait TokenHandler: Debug {
+pub trait TokenHandler: Interface + Debug {
     type Claims: Serialize + DeserializeOwned;
 
     /// Encode `Claims` structore to token

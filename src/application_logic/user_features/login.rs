@@ -6,6 +6,7 @@ use boolinator::Boolinator;
 use chrono::Duration;
 use getset::{Getters, MutGetters};
 use serde::{Deserialize, Serialize};
+use shaku::Provider;
 use std::sync::Arc;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
@@ -22,21 +23,25 @@ pub struct AuthData {
     token: String,
 }
 
-pub trait Loginer {
+pub trait Loginer: 'static {
     fn login(&self, login_data: LoginData<'_>) -> Result<AuthData>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Loginer)]
 #[getset(get = "pub")]
 pub struct LoginerImpl {
-    repo: Arc<dyn UserRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn UserRepo>,
+    #[shaku(inject)]
     hasher: Arc<dyn Hasher>,
+    #[shaku(inject)]
     token_handler: Arc<dyn TokenHandler<Claims = Claims>>,
 }
 
 impl LoginerImpl {
     pub fn new(
-        repo: Arc<dyn UserRepo>,
+        repo: Box<dyn UserRepo>,
         hasher: Arc<dyn Hasher>,
         token_handler: Arc<dyn TokenHandler<Claims = Claims>>,
     ) -> Self {

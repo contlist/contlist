@@ -1,20 +1,22 @@
 use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::entities::contact::{Contact, Result};
 use getset::Getters;
-use std::sync::Arc;
+use shaku::Provider;
 
-pub trait Lister {
+pub trait Lister: 'static {
     fn list(&self, username: &str) -> Result<Vec<Contact>>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Lister)]
 #[getset(get = "pub")]
 pub struct ListerImpl {
-    repo: Arc<dyn ContactRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn ContactRepo>,
 }
 
 impl ListerImpl {
-    pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
+    pub fn new(repo: Box<dyn ContactRepo>) -> Self {
         Self { repo }
     }
 }

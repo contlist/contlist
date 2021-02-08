@@ -3,9 +3,11 @@ use crate::domain_model::claims::Claims;
 use crate::domain_model::entities::user::{Error, Result};
 use jsonwebtoken::errors::{Error as JwtError, ErrorKind as JwtErrorKind};
 use jsonwebtoken::{self as jwt, Algorithm};
+use shaku::Component;
 use std::env;
 
-#[derive(Debug)]
+#[derive(Component, Debug)]
+#[shaku(interface = TokenHandler<Claims = Claims>)]
 pub struct JwtTokenHandler;
 
 impl TokenHandler for JwtTokenHandler {

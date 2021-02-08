@@ -4,6 +4,7 @@ use crate::domain_logic::security::hasher::Hasher;
 use crate::domain_model::entities::user::Result;
 use getset::{Getters, MutGetters};
 use serde::Deserialize;
+use shaku::Provider;
 use std::sync::Arc;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
@@ -12,19 +13,22 @@ pub struct UpdateData<'a> {
     password: &'a str,
 }
 
-pub trait Updater {
+pub trait Updater: 'static {
     fn update(&self, username: &str, update_data: UpdateData<'_>) -> Result<()>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Updater)]
 #[getset(get = "pub")]
 pub struct UpdaterImpl {
-    repo: Arc<dyn UserRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn UserRepo>,
+    #[shaku(inject)]
     hasher: Arc<dyn Hasher>,
 }
 
 impl UpdaterImpl {
-    pub fn new(repo: Arc<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
+    pub fn new(repo: Box<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
         Self { repo, hasher }
     }
 }

@@ -1,7 +1,8 @@
 use crate::domain_model::entities::user::{Result, User};
+use shaku::Interface;
 use std::fmt::Debug;
 
-pub trait UserRepo: Debug {
+pub trait UserRepo: Interface + Debug {
     fn save_new_user(
         &self,
         username: &str,

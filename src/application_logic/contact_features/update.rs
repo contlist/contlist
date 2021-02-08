@@ -2,7 +2,7 @@ use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::{entities::contact::Result, phone_number::PhoneNumber};
 use getset::{Getters, MutGetters};
 use serde::Deserialize;
-use std::sync::Arc;
+use shaku::Provider;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
@@ -11,18 +11,20 @@ pub struct UpdateData<'a> {
     phone_number: PhoneNumber<&'a str>,
 }
 
-pub trait Updater {
+pub trait Updater: 'static {
     fn update(&self, username: &str, id: i64, update_data: UpdateData<'_>) -> Result<()>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Updater)]
 #[getset(get = "pub")]
 pub struct UpdaterImpl {
-    repo: Arc<dyn ContactRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn ContactRepo>,
 }
 
 impl UpdaterImpl {
-    pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
+    pub fn new(repo: Box<dyn ContactRepo>) -> Self {
         Self { repo }
     }
 }

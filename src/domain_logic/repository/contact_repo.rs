@@ -1,8 +1,9 @@
 use crate::domain_model::entities::contact::{Contact, Result};
 use crate::domain_model::phone_number::PhoneNumber;
+use shaku::Interface;
 use std::fmt::Debug;
 
-pub trait ContactRepo: Debug {
+pub trait ContactRepo: Interface + Debug {
     fn save_new_contact(
         &self,
         username: &str,

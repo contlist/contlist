@@ -12,6 +12,7 @@ mod domain_logic;
 mod domain_model;
 mod infrastructure;
 mod log;
+mod module;
 mod schema;
 mod utils;
 mod web;

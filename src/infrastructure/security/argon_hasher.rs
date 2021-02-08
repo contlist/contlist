@@ -1,9 +1,11 @@
 use crate::domain_logic::security::hasher::Hasher;
 use crate::domain_model::entities::user::{Error, Result};
 use argon2::Error as ArgonError;
+use shaku::Component;
 
 /// Hasker uses Argon 2 algorithm
-#[derive(Debug)]
+#[derive(Component, Debug)]
+#[shaku(interface = Hasher)]
 pub struct ArgonHasher;
 
 impl Hasher for ArgonHasher {

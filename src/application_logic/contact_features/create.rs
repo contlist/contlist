@@ -2,7 +2,7 @@ use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::{entities::contact::Result, phone_number::PhoneNumber};
 use getset::{Getters, MutGetters};
 use serde::Deserialize;
-use std::sync::Arc;
+use shaku::Provider;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
@@ -11,18 +11,20 @@ pub struct CreateData<'a> {
     phone_number: PhoneNumber<&'a str>,
 }
 
-pub trait Creator {
+pub trait Creator: 'static {
     fn create(&self, username: &str, create_data: CreateData<'_>) -> Result<i64>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Creator)]
 #[getset(get = "pub")]
 pub struct CreatorImpl {
-    repo: Arc<dyn ContactRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn ContactRepo>,
 }
 
 impl CreatorImpl {
-    pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
+    pub fn new(repo: Box<dyn ContactRepo>) -> Self {
         Self { repo }
     }
 }

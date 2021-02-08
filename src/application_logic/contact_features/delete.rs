@@ -1,20 +1,22 @@
 use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::entities::contact::Result;
 use getset::Getters;
-use std::sync::Arc;
+use shaku::Provider;
 
-pub trait Delitor {
+pub trait Delitor: 'static {
     fn delete(&self, username: &str, id: i64) -> Result<()>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Delitor)]
 #[getset(get = "pub")]
 pub struct DelitorImpl {
-    repo: Arc<dyn ContactRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn ContactRepo>,
 }
 
 impl DelitorImpl {
-    pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
+    pub fn new(repo: Box<dyn ContactRepo>) -> Self {
         Self { repo }
     }
 }

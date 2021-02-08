@@ -4,6 +4,7 @@ use crate::domain_logic::security::hasher::Hasher;
 use crate::domain_model::entities::user::Result;
 use getset::{Getters, MutGetters};
 use serde::Deserialize;
+use shaku::Provider;
 use std::sync::Arc;
 
 #[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
@@ -13,19 +14,22 @@ pub struct RegisterData<'a> {
     password: &'a str,
 }
 
-pub trait Registar {
+pub trait Registar: 'static {
     fn register(&self, register_data: RegisterData<'_>) -> Result<()>;
 }
 
-#[derive(Clone, Getters, Debug)]
+#[derive(Provider, Getters)]
+#[shaku(interface = Registar)]
 #[getset(get = "pub")]
 pub struct RegistarImpl {
-    repo: Arc<dyn UserRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn UserRepo>,
+    #[shaku(inject)]
     hasher: Arc<dyn Hasher>,
 }
 
-impl RegistarImpl {
-    pub fn new(repo: Arc<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
+impl RegistarImpl { 
+    pub fn new(repo: Box<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
         Self { repo, hasher }
     }
 }
