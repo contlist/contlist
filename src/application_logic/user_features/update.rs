@@ -12,19 +12,25 @@ pub struct UpdateData<'a> {
     password: &'a str,
 }
 
+pub trait Updater {
+    fn update(&self, username: &str, update_data: UpdateData<'_>) -> Result<()>;
+}
+
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Update {
+pub struct UpdaterImpl {
     repo: Arc<dyn UserRepo>,
     hasher: Arc<dyn Hasher>,
 }
 
-impl Update {
+impl UpdaterImpl {
     pub fn new(repo: Arc<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
         Self { repo, hasher }
     }
+}
 
-    pub fn handle(&self, username: &str, update_data: UpdateData<'_>) -> Result<()> {
+impl Updater for UpdaterImpl {
+    fn update(&self, username: &str, update_data: UpdateData<'_>) -> Result<()> {
         let mut rng = rand::thread_rng();
         let salt = salt::generate(&mut rng);
         let hash = self.hasher.hash(update_data.password, &salt[..])?;

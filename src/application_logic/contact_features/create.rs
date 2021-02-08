@@ -11,18 +11,24 @@ pub struct CreateData<'a> {
     phone_number: PhoneNumber<&'a str>,
 }
 
+pub trait Creator {
+    fn create(&self, username: &str, create_data: CreateData<'_>) -> Result<i64>;
+}
+
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Create {
+pub struct CreatorImpl {
     repo: Arc<dyn ContactRepo>,
 }
 
-impl Create {
+impl CreatorImpl {
     pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
         Self { repo }
     }
+}
 
-    pub fn handle(&self, username: &str, create_data: CreateData<'_>) -> Result<i64> {
+impl Creator for CreatorImpl {
+    fn create(&self, username: &str, create_data: CreateData<'_>) -> Result<i64> {
         self.repo
             .save_new_contact(username, create_data.contact_name, create_data.phone_number)
     }

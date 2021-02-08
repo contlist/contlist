@@ -22,15 +22,19 @@ pub struct AuthData {
     token: String,
 }
 
+pub trait Loginer {
+    fn login(&self, login_data: LoginData<'_>) -> Result<AuthData>;
+}
+
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Login {
+pub struct LoginerImpl {
     repo: Arc<dyn UserRepo>,
     hasher: Arc<dyn Hasher>,
     token_handler: Arc<dyn TokenHandler<Claims = Claims>>,
 }
 
-impl Login {
+impl LoginerImpl {
     pub fn new(
         repo: Arc<dyn UserRepo>,
         hasher: Arc<dyn Hasher>,
@@ -42,8 +46,10 @@ impl Login {
             token_handler,
         }
     }
+}
 
-    pub fn handle(&self, login_data: LoginData) -> Result<AuthData> {
+impl Loginer for LoginerImpl {
+    fn login(&self, login_data: LoginData<'_>) -> Result<AuthData> {
         let user = self
             .repo
             .find_user_by_username(login_data.username)?

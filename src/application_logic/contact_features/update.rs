@@ -11,18 +11,24 @@ pub struct UpdateData<'a> {
     phone_number: PhoneNumber<&'a str>,
 }
 
+pub trait Updater {
+    fn update(&self, username: &str, id: i64, update_data: UpdateData<'_>) -> Result<()>;
+}
+
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Update {
+pub struct UpdaterImpl {
     repo: Arc<dyn ContactRepo>,
 }
 
-impl Update {
+impl UpdaterImpl {
     pub fn new(repo: Arc<dyn ContactRepo>) -> Self {
         Self { repo }
     }
+}
 
-    pub fn handle(&self, username: &str, id: i64, update_data: UpdateData<'_>) -> Result<()> {
+impl Updater for UpdaterImpl {
+    fn update(&self, username: &str, id: i64, update_data: UpdateData<'_>) -> Result<()> {
         self.repo
             .update_contact_with_username(
                 username,

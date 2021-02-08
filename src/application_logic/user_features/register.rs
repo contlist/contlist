@@ -13,19 +13,25 @@ pub struct RegisterData<'a> {
     password: &'a str,
 }
 
+pub trait Registar {
+    fn register(&self, register_data: RegisterData<'_>) -> Result<()>;
+}
+
 #[derive(Clone, Getters, Debug)]
 #[getset(get = "pub")]
-pub struct Regisetr {
+pub struct RegistarImpl {
     repo: Arc<dyn UserRepo>,
     hasher: Arc<dyn Hasher>,
 }
 
-impl Regisetr {
+impl RegistarImpl {
     pub fn new(repo: Arc<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
         Self { repo, hasher }
     }
+}
 
-    pub fn handle(self, register_data: RegisterData<'_>) -> Result<()> {
+impl Registar for RegistarImpl {
+    fn register(&self, register_data: RegisterData<'_>) -> Result<()> {
         let mut rng = rand::thread_rng();
         let salt = salt::generate(&mut rng);
         let hash = self.hasher.hash(register_data.password, &salt[..])?;
