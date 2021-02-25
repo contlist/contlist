@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 rocket = "0.4"
-# rocket_contrib = { version = "0.4", features = ["json", "databases", "diesel_postgres_pool"] }
+rocket_contrib = { version = "0.4", features = ["json", "databases", "diesel_postgres_pool"] }
 rocket_cors = "0.5"
 diesel = { version = "1.0", features = ["postgres", "r2d2", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
@@ -15,6 +15,7 @@ anyhow = "1.0"
 log = { version = "0.4" }
 fern = { version = "0.5", features = ["colored"] }
 shaku = "0.6"
+shaku_rocket = "0.6"
 dotenv = "0.15"
 rand = "0.7"
 base64 = "0.12"
