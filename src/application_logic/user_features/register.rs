@@ -28,7 +28,7 @@ pub struct RegistarImpl {
     hasher: Arc<dyn Hasher>,
 }
 
-impl RegistarImpl { 
+impl RegistarImpl {
     pub fn new(repo: Box<dyn UserRepo>, hasher: Arc<dyn Hasher>) -> Self {
         Self { repo, hasher }
     }
