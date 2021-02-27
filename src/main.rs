@@ -16,11 +16,13 @@ mod module;
 mod schema;
 mod utils;
 
+use infrastructure::web;
+
 fn main() {
     dotenv::dotenv().expect("failed to set environment variables");
     log::LoggerConfig::default()
         .init()
         .expect("failed to init logger");
 
-    // web::rocket().launch();
+    web::rocket().launch();
 }
