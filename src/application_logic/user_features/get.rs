@@ -2,7 +2,6 @@ use crate::domain_logic::repository::UserRepo;
 use crate::domain_model::entities::user::{Error, Result, User};
 use getset::Getters;
 use shaku::Provider;
-use std::sync::Arc;
 
 pub trait Getter: 'static {
     fn get(&self, username: &str) -> Result<User>;
@@ -12,12 +11,12 @@ pub trait Getter: 'static {
 #[derive(Provider, Getters)]
 #[shaku(interface = Getter)]
 pub struct GetterImpl {
-    #[shaku(inject)]
-    repo: Arc<dyn UserRepo>,
+    #[shaku(provide)]
+    repo: Box<dyn UserRepo>,
 }
 
 impl GetterImpl {
-    pub fn new(repo: Arc<dyn UserRepo>) -> Self {
+    pub fn new(repo: Box<dyn UserRepo>) -> Self {
         Self { repo }
     }
 }
