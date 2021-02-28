@@ -7,7 +7,6 @@ extern crate rocket;
 extern crate diesel;
 
 mod application_logic;
-mod domain;
 mod domain_logic;
 mod domain_model;
 mod infrastructure;
