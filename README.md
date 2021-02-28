@@ -7,10 +7,10 @@ Layers:
 * [x] Domain Model
   * domain entities (User, Contact)
   * other types (PhoneNumber, Claims)
-* [ ] Domain Logic
+* [x] Domain Logic
   * repository traits
-  * business logic decisions (no in this project)
-* [ ] Application Logic
+  * business logic decisions
+* [x] Application Logic
   * features traits (Loginer, ContactCreater) (optional)
   * features (login, register, create contact)
 * [x] Infrastructure
