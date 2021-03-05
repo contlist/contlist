@@ -10,8 +10,10 @@ use crate::module::MainModule;
 use crate::utils;
 use rocket::Route;
 use rocket_contrib::json::Json;
+use rocket_okapi::{openapi, routes_with_openapi};
 use shaku_rocket::InjectProvided;
 
+#[openapi]
 #[post("/register", format = "json", data = "<register_data>")]
 fn register(
     register_data: Json<RegisterData>,
@@ -25,6 +27,7 @@ fn register(
         .inspect_err(|e| log::warn!("failed to register user: {}", e))
 }
 
+#[openapi]
 #[post("/login", format = "json", data = "<login_data>")]
 fn login(
     login_data: Json<LoginData>,
@@ -40,6 +43,7 @@ fn login(
         .inspect(|a| log::debug!("the user logged in successfully: {:#?}", a))
 }
 
+#[openapi]
 #[get("/<username>")]
 fn get(username: String, getter: InjectProvided<MainModule, dyn Getter>) -> Result<Json<User>> {
     getter
@@ -49,6 +53,7 @@ fn get(username: String, getter: InjectProvided<MainModule, dyn Getter>) -> Resu
         .inspect(|u| log::debug!("user: {:#?}", u))
 }
 
+#[openapi]
 #[put("/", format = "json", data = "<update_data>")]
 fn update(
     current_user: Result<CurrentUser>,
@@ -66,5 +71,5 @@ fn update(
 }
 
 pub fn api() -> Vec<Route> {
-    routes![register, login, get, update]
+    routes_with_openapi![register, login, get, update]
 }

@@ -11,8 +11,10 @@ use crate::module::MainModule;
 use crate::utils;
 use rocket::Route;
 use rocket_contrib::json::Json;
+use rocket_okapi::{openapi, routes_with_openapi};
 use shaku_rocket::InjectProvided;
 
+#[openapi]
 #[post("/", format = "json", data = "<create_data>")]
 fn create(
     current_user: Result<CurrentUser>,
@@ -31,6 +33,7 @@ fn create(
         .inspect(|id| log::debug!("created contact id: {:#?}", id))
 }
 
+#[openapi]
 #[get("/")]
 fn get(
     current_user: Result<CurrentUser>,
@@ -46,6 +49,7 @@ fn get(
         .inspect(|_| log::debug!("user's contacts was successfully collected"))
 }
 
+#[openapi]
 #[put("/<id>", format = "json", data = "<update_data>")]
 fn update(
     current_user: Result<CurrentUser>,
@@ -64,6 +68,7 @@ fn update(
         .inspect(|_| log::debug!("the contact was successfully updated"))
 }
 
+#[openapi]
 #[delete("/<id>")]
 fn delete(
     current_user: Result<CurrentUser>,
@@ -80,5 +85,5 @@ fn delete(
 }
 
 pub fn api() -> Vec<Route> {
-    routes![create, get, update, delete]
+    routes_with_openapi![create, get, update, delete]
 }

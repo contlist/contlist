@@ -5,18 +5,19 @@ use crate::domain_model::entities::user::{Error, Result};
 use boolinator::Boolinator;
 use chrono::Duration;
 use getset::{Getters, MutGetters};
+use rocket_okapi::JsonSchema;
 use serde::{Deserialize, Serialize};
 use shaku::Provider;
 use std::sync::Arc;
 
-#[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
+#[derive(Deserialize, Clone, Getters, MutGetters, JsonSchema, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct LoginData<'a> {
     username: &'a str,
     password: &'a str,
 }
 
-#[derive(Serialize, Clone, Getters, MutGetters, Debug)]
+#[derive(Serialize, Clone, Getters, MutGetters, JsonSchema, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct AuthData {
     username: String,

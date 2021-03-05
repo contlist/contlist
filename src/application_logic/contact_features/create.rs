@@ -1,10 +1,11 @@
 use crate::domain_logic::repository::ContactRepo;
 use crate::domain_model::{entities::contact::Result, phone_number::PhoneNumber};
 use getset::{Getters, MutGetters};
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 use shaku::Provider;
 
-#[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
+#[derive(Deserialize, Clone, Getters, MutGetters, JsonSchema, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct CreateData<'a> {
     contact_name: &'a str,

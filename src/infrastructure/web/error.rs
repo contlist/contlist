@@ -1,6 +1,9 @@
 use crate::domain_model::entities::{contact::Error as CError, user::Error as UError};
+use okapi::openapi3::Responses;
 use rocket::response::{Responder, Response, Result as ResponseResult};
 use rocket::{http::Status, Request};
+use rocket_contrib::json::JsonValue;
+use rocket_okapi::{gen::OpenApiGenerator, response::OpenApiResponder, Result as OpenApiResult};
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -35,5 +38,11 @@ impl<'r> Responder<'r> for Error {
         .finalize();
 
         Ok(response)
+    }
+}
+
+impl OpenApiResponder<'_> for Error {
+    fn responses(gen: &mut OpenApiGenerator) -> OpenApiResult<Responses> {
+        JsonValue::responses(gen)
     }
 }

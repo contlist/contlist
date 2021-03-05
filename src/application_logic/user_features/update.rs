@@ -3,11 +3,12 @@ use crate::domain_logic::repository::UserRepo;
 use crate::domain_logic::security::hasher::Hasher;
 use crate::domain_model::entities::user::Result;
 use getset::{Getters, MutGetters};
+use rocket_okapi::JsonSchema;
 use serde::Deserialize;
 use shaku::Provider;
 use std::sync::Arc;
 
-#[derive(Deserialize, Clone, Getters, MutGetters, Debug)]
+#[derive(Deserialize, Clone, Getters, MutGetters, JsonSchema, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct UpdateData<'a> {
     password: &'a str,

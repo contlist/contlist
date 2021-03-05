@@ -3,6 +3,7 @@ pub mod error;
 
 mod endpoints;
 pub use endpoints::contact_endpoints as contact;
+pub use endpoints::swagger;
 pub use endpoints::user_endpoints as user;
 
 use crate::module::MainModule;
@@ -27,6 +28,7 @@ pub fn rocket() -> Rocket {
         .mount("/", rocket_cors::catch_all_options_routes())
         .mount("/user", user::api())
         .mount("/contact", contact::api())
+        .mount("/swagger", swagger::api())
         .manage(cors.clone())
         .manage(box module)
         .attach(cors)

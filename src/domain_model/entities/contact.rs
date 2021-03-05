@@ -1,10 +1,11 @@
 use crate::domain_model::phone_number::PhoneNumber;
 use getset::{Getters, MutGetters};
+use rocket_okapi::JsonSchema;
 use serde::Serialize;
 use std::error::Error as StdError;
 use thiserror::Error;
 
-#[derive(Serialize, Clone, Getters, MutGetters, Debug)]
+#[derive(Serialize, Clone, Getters, MutGetters, JsonSchema, Debug)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct Contact {
     id: i64,

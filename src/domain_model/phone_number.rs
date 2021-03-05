@@ -2,13 +2,24 @@ use crate::utils::OptionExt;
 use diesel::deserialize::{self, FromSql};
 use diesel::serialize::{self, Output, ToSql};
 use diesel::{backend::Backend, sql_types::Text};
+use rocket_okapi::JsonSchema;
 use serde::{de::Error as DeError, Deserialize, Deserializer, Serialize};
 use std::{convert::TryFrom, io::Write, ops::Deref};
 use thiserror::Error;
 
 /// A string that matches (+)?[0-9]+
 #[derive(
-    Serialize, AsExpression, FromSqlRow, Clone, Eq, PartialEq, Ord, PartialOrd, Hash, Debug,
+    Serialize,
+    AsExpression,
+    FromSqlRow,
+    Clone,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Hash,
+    JsonSchema,
+    Debug,
 )]
 #[sql_type = "Text"]
 pub struct PhoneNumber<T>(T);

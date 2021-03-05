@@ -8,6 +8,7 @@ edition = "2018"
 rocket = "0.4"
 rocket_contrib = { version = "0.4", features = ["json", "databases", "diesel_postgres_pool"] }
 rocket_cors = "0.5"
+rocket_okapi = "0.5"
 diesel = { version = "1.0", features = ["postgres", "r2d2", "chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
@@ -16,6 +17,8 @@ log = { version = "0.4" }
 fern = { version = "0.5", features = ["colored"] }
 shaku = "0.6"
 shaku_rocket = "0.6"
+schemars = "0.7"
+okapi = { version = "0.4", features = ["derive_json_schema"] }
 dotenv = "0.15"
 rand = "0.7"
 base64 = "0.12"
